@@ -64,7 +64,8 @@ bool Game::LoadMedia()
 {
 	bool success = true;
 
-	_splashScreen = SDL_LoadBMP("../assets/graphics/polygonwhale.bmp");
+
+	_splashScreen = LoadSurface("../Dead-Sky/assets/graphics/polygonwhale.bmp");
 	if(_splashScreen == NULL)
 	{
 		printf("Error loading image... Error %s\n", SDL_GetError());
@@ -72,6 +73,30 @@ bool Game::LoadMedia()
 	}
 
 	return success;
+}
+
+SDL_Surface* Game::LoadSurface(std::string path)
+{
+	SDL_Surface* optimizedSurface = NULL;
+
+	SDL_Surface* loadedSurface = SDL_LoadBMP(path.c_str());
+	if (loadedSurface == NULL)
+	{
+		printf("Error loading image... Error %s\n", SDL_GetError());
+	}
+
+	else
+	{
+		optimizedSurface = SDL_ConvertSurface(loadedSurface, _screenSurface->format, NULL);
+		if (optimizedSurface == NULL)
+		{
+			printf("Error optimizing surface... Error %s\n", SDL_GetError());
+		}
+
+		SDL_FreeSurface(loadedSurface);
+	}
+
+	return optimizedSurface;
 }
 
 void Game::Input()
@@ -130,11 +155,21 @@ void Game::Update()
 
 void Game::Draw()
 {
+	SDL_Rect stretchRect; 
+	stretchRect.x = 0; 
+	stretchRect.y = 0; 
+	stretchRect.w = SCREEN_WIDTH; 
+	stretchRect.h = SCREEN_HEIGHT; 
+	SDL_BlitScaled( _splashScreen, NULL, _screenSurface, &stretchRect );
+
+	SDL_UpdateWindowSurface(_window);
+
+	/*
 	// Update _screenSurface with the first argument.
 	SDL_BlitSurface(_splashScreen, NULL, _screenSurface, NULL);
 
 	// Draw _screenSurface to the window.
-	SDL_UpdateWindowSurface(_window);
+	SDL_UpdateWindowSurface(_window);*/
 }
 
 void Game::Cleanup()

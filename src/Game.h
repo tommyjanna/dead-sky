@@ -46,7 +46,7 @@ private:
     // Map for storing keyboard input
     std::map<int, bool> _keyDown;
 
-    SDL_Surface* loadSurface(std::string path);
+    SDL_Surface* LoadSurface(std::string path);
     
     SDL_Window* _window;
     SDL_Surface* _screenSurface;
