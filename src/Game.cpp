@@ -64,8 +64,12 @@ bool Game::LoadMedia()
 {
 	bool success = true;
 
-
+#ifdef _WIN32
 	_splashScreen = LoadSurface("../Dead-Sky/assets/graphics/polygonwhale.bmp");
+#else
+	_splashScreen = LoadSurface("../assets/graphics/polygonwhale.bmp");
+#endif
+
 	if(_splashScreen == NULL)
 	{
 		printf("Error loading image... Error %s\n", SDL_GetError());
@@ -87,7 +91,7 @@ SDL_Surface* Game::LoadSurface(std::string path)
 
 	else
 	{
-		optimizedSurface = SDL_ConvertSurface(loadedSurface, _screenSurface->format, NULL);
+		optimizedSurface = SDL_ConvertSurface(loadedSurface, _screenSurface->format, 0);
 		if (optimizedSurface == NULL)
 		{
 			printf("Error optimizing surface... Error %s\n", SDL_GetError());
