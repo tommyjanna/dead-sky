@@ -26,7 +26,7 @@ void Game::Run()
 		Input();
 		Update();
 		Draw();
-		SDL_Delay(20);
+		SDL_Delay(10);
 	}
 
 	Cleanup();
