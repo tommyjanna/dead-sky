@@ -12,6 +12,7 @@
 #define GAME_H
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <cstdio>
 #include <string>
 #include <map>

@@ -54,6 +54,15 @@ bool Game::InitializeSDL()
 		printf("Error creating SDL window... Error: %s\n", SDL_GetError());
 		success = false;
 	}
+
+	// Initialize SDL_image subsystem.
+	// This statement sets up the system for handling PNG files.
+	int imgInit = IMG_INIT_PNG;
+	if (!IMG_Init(imgInit)&imgInit)
+	{
+		printf("Error initializing SDL_image... Error: %s\n", IMG_GetError());
+		success = false;
+	}
 	
 	// This statement attaches the main screen surface to the window.
 	_screenSurface = SDL_GetWindowSurface(_window);
@@ -66,9 +75,9 @@ bool Game::LoadMedia()
 	bool success = true;
 
 #ifdef _WIN32
-	_splashScreen = LoadSurface("../Dead-Sky/assets/graphics/polygonwhale.bmp");
+	_splashScreen = LoadSurface("../Dead-Sky/assets/graphics/polygonwhale.png");
 #else
-	_splashScreen = LoadSurface("../assets/graphics/polygonwhale.bmp");
+	_splashScreen = LoadSurface("../assets/graphics/polygonwhale.png");
 #endif
 
 	if(_splashScreen == NULL)
@@ -84,14 +93,16 @@ SDL_Surface* Game::LoadSurface(std::string path)
 {
 	SDL_Surface* optimizedSurface = NULL;
 
-	SDL_Surface* loadedSurface = SDL_LoadBMP(path.c_str());
+	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 	if (loadedSurface == NULL)
 	{
-		printf("Error loading image... Error %s\n", SDL_GetError());
+		printf("Error loading image... Error %s\n", IMG_GetError());
 	}
 
 	else
 	{
+		// This statement optimizes the loaded surface by converting it
+		// to the format of the main screen surface.
 		optimizedSurface = SDL_ConvertSurface(loadedSurface, _screenSurface->format, 0);
 		if (optimizedSurface == NULL)
 		{
