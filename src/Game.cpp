@@ -58,7 +58,7 @@ bool Game::InitializeSDL()
 	// Initialize SDL_image subsystem.
 	// This statement sets up the system for handling PNG files.
 	int imgInit = IMG_INIT_PNG;
-	if (!IMG_Init(imgInit)&imgInit)
+	if (!(IMG_Init(imgInit)&imgInit))
 	{
 		printf("Error initializing SDL_image... Error: %s\n", IMG_GetError());
 		success = false;
