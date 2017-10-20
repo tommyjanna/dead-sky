@@ -1,13 +1,13 @@
 // Game.cpp
 // Implementation of the Game class.
 // Created on October 4, 2017
-// Last modified on October 17, 2017
+// Last modified on October 20, 2017
 
 #include "Game.h"
 
 Game::Game()
 {
-	_window = NULL, _screenSurface = NULL, _splashScreen = NULL;
+	_window = NULL, _splashScreen = NULL, _renderer = NULL;
 
 	InitializeSDL();
 	LoadMedia();
@@ -26,7 +26,7 @@ void Game::Run()
 		Input();
 		Update();
 		Draw();
-		SDL_Delay(10);
+		//SDL_Delay(10);
 	}
 
 	Cleanup();
@@ -55,6 +55,23 @@ bool Game::InitializeSDL()
 		success = false;
 	}
 
+	// Create renderer for _window, this attaches _renderer to _window.
+	// -1 index to setup with accelerated rendering.
+	_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+
+	if(_renderer == NULL)
+	{
+		printf("Error creating SDL renderer... Error: %s\n", SDL_GetError());
+		success = false;
+	}
+
+	else
+	{
+		// Init the renderers draw colour.
+		// SDL_SetRenderDrawColor(renderer, red, green, blue, alpha)
+		SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	}
+
 	// Initialize SDL_image subsystem.
 	// This statement sets up the system for handling PNG files.
 	int imgInit = IMG_INIT_PNG;
@@ -63,9 +80,6 @@ bool Game::InitializeSDL()
 		printf("Error initializing SDL_image... Error: %s\n", IMG_GetError());
 		success = false;
 	}
-	
-	// This statement attaches the main screen surface to the window.
-	_screenSurface = SDL_GetWindowSurface(_window);
 
     return success;
 }
@@ -75,9 +89,9 @@ bool Game::LoadMedia()
 	bool success = true;
 
 #ifdef _WIN32
-	_splashScreen = LoadSurface("../Dead-Sky/assets/graphics/polygonwhale.png");
+	_splashScreen = LoadTexture("../Dead-Sky/assets/graphics/polygonwhale.png");
 #else
-	_splashScreen = LoadSurface("../assets/graphics/polygonwhale.png");
+	_splashScreen = LoadTexture("../assets/graphics/polygonwhale.png");
 #endif
 
 	if(_splashScreen == NULL)
@@ -89,9 +103,9 @@ bool Game::LoadMedia()
 	return success;
 }
 
-SDL_Surface* Game::LoadSurface(std::string path)
+SDL_Texture* Game::LoadTexture(std::string path)
 {
-	SDL_Surface* optimizedSurface = NULL;
+	SDL_Texture* newTexture = NULL;
 
 	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 	if (loadedSurface == NULL)
@@ -101,18 +115,18 @@ SDL_Surface* Game::LoadSurface(std::string path)
 
 	else
 	{
-		// This statement optimizes the loaded surface by converting it
-		// to the format of the main screen surface.
-		optimizedSurface = SDL_ConvertSurface(loadedSurface, _screenSurface->format, 0);
-		if (optimizedSurface == NULL)
+		// Create SDL_Texture using loaded surface data
+		newTexture = SDL_CreateTextureFromSurface(_renderer, loadedSurface);
+
+		if (newTexture == NULL)
 		{
-			printf("Error optimizing surface... Error %s\n", SDL_GetError());
+			printf("Error creating texture... Error %s\n", SDL_GetError());
 		}
 
 		SDL_FreeSurface(loadedSurface);
 	}
 
-	return optimizedSurface;
+	return newTexture;
 }
 
 void Game::Input()
@@ -167,18 +181,28 @@ void Game::Update()
 
 	if(IsKeyDown(SDL_SCANCODE_RIGHT))
 		printf("Right\n");
+	
 }
 
 void Game::Draw()
 {
-	SDL_Rect stretchRect; 
+	/*SDL_Rect stretchRect; 
 	stretchRect.x = 0; 
 	stretchRect.y = 0; 
 	stretchRect.w = SCREEN_WIDTH; 
 	stretchRect.h = SCREEN_HEIGHT; 
 	SDL_BlitScaled( _splashScreen, NULL, _screenSurface, &stretchRect );
 
-	SDL_UpdateWindowSurface(_window);
+	SDL_UpdateWindowSurface(_window);*/
+
+	// Clear the renderer.
+	SDL_RenderClear(_renderer);
+
+	// Draw to the back buffer.
+	SDL_RenderCopy(_renderer, _splashScreen, NULL, NULL); //renderer, texture, src rect, trg rect
+
+	// Update the window.
+	SDL_RenderPresent(_renderer);
 
 	/*
 	// Update _screenSurface with the first argument.
@@ -190,8 +214,10 @@ void Game::Draw()
 
 void Game::Cleanup()
 {
-    SDL_DestroyWindow(_window);
-	SDL_FreeSurface(_splashScreen);
-	_screenSurface = NULL, _splashScreen = NULL, _window = NULL;
+	SDL_DestroyWindow(_window);
+	SDL_DestroyRenderer(_renderer);
+	SDL_DestroyTexture(_splashScreen);
+	_splashScreen = NULL, _window = NULL, _renderer = NULL;
+	IMG_Quit();
 	SDL_Quit();
 }
