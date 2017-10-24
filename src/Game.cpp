@@ -88,6 +88,8 @@ bool Game::LoadMedia()
 {
 	bool success = true;
 
+	_splashScreen = new Texture(_renderer);
+/*
 #ifdef _WIN32
 	_splashScreen = LoadTexture("../Dead-Sky/assets/graphics/polygonwhale.png");
 #else
@@ -98,35 +100,11 @@ bool Game::LoadMedia()
 	{
 		printf("Error loading image... Error %s\n", SDL_GetError());
 		success = false;
-	}
+	}*/
+
+	_splashScreen->LoadTexture("../assets/graphics/polygonwhale.png");
 
 	return success;
-}
-
-SDL_Texture* Game::LoadTexture(std::string path)
-{
-	SDL_Texture* newTexture = NULL;
-
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == NULL)
-	{
-		printf("Error loading image... Error %s\n", IMG_GetError());
-	}
-
-	else
-	{
-		// Create SDL_Texture using loaded surface data
-		newTexture = SDL_CreateTextureFromSurface(_renderer, loadedSurface);
-
-		if (newTexture == NULL)
-		{
-			printf("Error creating texture... Error %s\n", SDL_GetError());
-		}
-
-		SDL_FreeSurface(loadedSurface);
-	}
-
-	return newTexture;
 }
 
 void Game::Input()
@@ -199,7 +177,8 @@ void Game::Draw()
 	SDL_RenderClear(_renderer);
 
 	// Draw to the back buffer.
-	SDL_RenderCopy(_renderer, _splashScreen, NULL, NULL); //renderer, texture, src rect, trg rect
+	//SDL_RenderCopy(_renderer, _splashScreen, NULL, NULL); //renderer, texture, src rect, trg rect
+	_splashScreen->Render(0, 0);
 
 	// Update the window.
 	SDL_RenderPresent(_renderer);
@@ -216,7 +195,7 @@ void Game::Cleanup()
 {
 	SDL_DestroyWindow(_window);
 	SDL_DestroyRenderer(_renderer);
-	SDL_DestroyTexture(_splashScreen);
+	delete _splashScreen;
 	_splashScreen = NULL, _window = NULL, _renderer = NULL;
 	IMG_Quit();
 	SDL_Quit();

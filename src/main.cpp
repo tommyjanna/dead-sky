@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
 {
 	Game myGame = Game();
 
+	// Begin the main game loop.
 	myGame.Run();
 
 	return 0;

@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <string>
 #include <map>
+#include "Texture.h"
 
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 576
@@ -35,7 +36,7 @@ private:
     bool LoadMedia();
 
     void Input();
-    bool IsKeyDown(int key);
+    bool IsKeyDown(int);
 
     void Update();
     void Draw();
@@ -46,13 +47,11 @@ private:
 
     // Map for storing keyboard input
     std::map<int, bool> _keyDown;
-
-    SDL_Texture* LoadTexture(std::string path);
     
     SDL_Renderer* _renderer;
 
     SDL_Window* _window;
-    SDL_Texture* _splashScreen;
+    Texture* _splashScreen;
 };
 
 #endif
