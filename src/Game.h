@@ -11,15 +11,22 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <cstdio>
-#include <string>
-#include <map>
+#include "GameObjects/SplashScreen.h"
 #include "Texture.h"
+#include "GameObject.h"
+#include <SDL_image.h>
+#include <SDL.h>
+#include <map>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <cstdio>
 
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 576
+
+class GameObject;
+class SplashScreen;
 
 class Game
 {
@@ -30,10 +37,14 @@ public:
 
     void Run();
 
+    // Leave public because it needs to be accessible by basically everything duuhhh.
+    static SDL_Renderer* _renderer;
+    static std::vector<GameObject*> _objects;
+
 private:
 
     bool InitializeSDL();
-    bool LoadMedia();
+    void LoadMedia();
 
     void Input();
     bool IsKeyDown(int);
@@ -47,11 +58,10 @@ private:
 
     // Map for storing keyboard input
     std::map<int, bool> _keyDown;
-    
-    SDL_Renderer* _renderer;
 
     SDL_Window* _window;
-    Texture* _splashScreen;
+
+    SplashScreen* _splashScreen;
 };
 
 #endif

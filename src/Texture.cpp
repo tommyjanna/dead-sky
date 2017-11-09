@@ -5,14 +5,33 @@
 
 #include "Texture.h"
 
+
+Texture::Texture()
+{
+    _texture = NULL;
+    
+    _width = 0;
+    _height = 0;
+    _opacity = 255;
+
+    _renderer = Game::_renderer;
+
+    // Set texture opactiy.
+    SDL_SetTextureAlphaMod(_texture, _opacity);
+}
+
 Texture::Texture(SDL_Renderer* renderer)
 {
     _texture = NULL;
 
     _width = 0;
     _height = 0;
+    _opacity = 255;
 
     _renderer = renderer;
+
+    // Set texture opactiy.
+    SDL_SetTextureAlphaMod(_texture, _opacity);
 }
 
 Texture::~Texture()
@@ -47,6 +66,7 @@ void Texture::LoadTexture(std::string path)
             _height = loadedSurface->h;
         }
 
+        // Free temporary surface as data is now stored in an SDL_Texture.
         SDL_FreeSurface(loadedSurface);
     }
 }
@@ -63,6 +83,7 @@ void Texture::FreeTexture()
 
 void Texture::Render(int x, int y)
 {
+    // Target rendering rectangle.
     SDL_Rect renderRect =
     {
         x,
@@ -72,4 +93,13 @@ void Texture::Render(int x, int y)
     };
 
     SDL_RenderCopy(_renderer, _texture, NULL, &renderRect);
+}
+
+void Texture::Fade()
+{
+    if(_opacity != 0)
+    {
+        _opacity--;
+        SDL_SetTextureAlphaMod(_texture, _opacity);
+    }
 }

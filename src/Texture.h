@@ -11,13 +11,18 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <string>
-#include <SDL.h>
+#include "GameObject.h"
+#include "Game.h"
 #include <SDL_image.h>
+#include <SDL.h>
+#include <string>
+
 
 class Texture
 {
 public:
+    
+    Texture();
     Texture(SDL_Renderer*);
     ~Texture();
 
@@ -25,10 +30,13 @@ public:
 
     int GetWidth() { return _width; }
     int GetHeight() { return _height; }
+    int GetOpacity() { return _opacity; }
 
     void Render(int x, int y);
 
     void FreeTexture();
+
+    void Fade();
 
 private:
 
@@ -36,6 +44,8 @@ private:
     SDL_Renderer* _renderer;
 
     int _width, _height;
+
+    int _opacity;
 };
 
 #endif

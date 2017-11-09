@@ -5,12 +5,17 @@
 
 #include "Game.h"
 
+// Define static members
+SDL_Renderer* Game::_renderer = NULL;
+
 Game::Game()
 {
 	_window = NULL, _splashScreen = NULL, _renderer = NULL;
 
 	InitializeSDL();
 	LoadMedia();
+
+	_splashScreen = new SplashScreen();
 }
 
 Game::~Game()
@@ -26,7 +31,7 @@ void Game::Run()
 		Input();
 		Update();
 		Draw();
-		//SDL_Delay(10);
+		SDL_Delay(1000/30);
 	}
 
 	Cleanup();
@@ -36,7 +41,7 @@ bool Game::InitializeSDL()
 {
     bool success = true;
 	
-	if(SDL_Init(SDL_INIT_VIDEO) < 0)
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) // Initialize SDL video subsystem.
 	{
 		printf("Error initializing SDL... Error: %s\n", SDL_GetError());
 		success = false;
@@ -69,7 +74,7 @@ bool Game::InitializeSDL()
 	{
 		// Init the renderers draw colour.
 		// SDL_SetRenderDrawColor(renderer, red, green, blue, alpha)
-		SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
 	}
 
 	// Initialize SDL_image subsystem.
@@ -84,27 +89,12 @@ bool Game::InitializeSDL()
     return success;
 }
 
-bool Game::LoadMedia()
+void Game::LoadMedia()
 {
-	bool success = true;
+	//if(_splashScreen->_parentGO != NULL)
+		//_splashScreen->_parentGO->_texture->LoadTexture("../assets/graphics/polygonwhale.png");
 
-	_splashScreen = new Texture(_renderer);
-/*
-#ifdef _WIN32
-	_splashScreen = LoadTexture("../Dead-Sky/assets/graphics/polygonwhale.png");
-#else
-	_splashScreen = LoadTexture("../assets/graphics/polygonwhale.png");
-#endif
-
-	if(_splashScreen == NULL)
-	{
-		printf("Error loading image... Error %s\n", SDL_GetError());
-		success = false;
-	}*/
-
-	_splashScreen->LoadTexture("../assets/graphics/polygonwhale.png");
-
-	return success;
+	return;
 }
 
 void Game::Input()
@@ -159,44 +149,60 @@ void Game::Update()
 
 	if(IsKeyDown(SDL_SCANCODE_RIGHT))
 		printf("Right\n");
+
+	// Update existing GameObjects
+	for(int i = 0; _objects.size(); /*conditional increment*/ )
+	{
+		_objects[i]->Update();
+
+		// If objects flag to be destroyed is true, swap it and the last
+		// object in the vector, then delete it.
+		// This will help avoid having an empty element in the vector,
+		// and having to shift every element down.
+		if(_objects[i]->GetToBeDestroyed())
+		{
+			int lastObject = _objects.size() - 1;
+			std::swap(_objects[i], _objects[lastObject]);
+
+			// Delete are free pointer.
+			delete _objects[lastObject];
+			_objects[lastObject] = NULL;
+			_objects.erase(_objects.end() - 1);
+
+			// Don't increment i here to update the swapped object.
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+	return;
 	
 }
 
 void Game::Draw()
 {
-	/*SDL_Rect stretchRect; 
-	stretchRect.x = 0; 
-	stretchRect.y = 0; 
-	stretchRect.w = SCREEN_WIDTH; 
-	stretchRect.h = SCREEN_HEIGHT; 
-	SDL_BlitScaled( _splashScreen, NULL, _screenSurface, &stretchRect );
-
-	SDL_UpdateWindowSurface(_window);*/
-
 	// Clear the renderer.
 	SDL_RenderClear(_renderer);
 
 	// Draw to the back buffer.
-	//SDL_RenderCopy(_renderer, _splashScreen, NULL, NULL); //renderer, texture, src rect, trg rect
-	_splashScreen->Render(0, 0);
+	//_splashScreen->_parentGO->_texture->Render(0, 0);
 
 	// Update the window.
 	SDL_RenderPresent(_renderer);
-
-	/*
-	// Update _screenSurface with the first argument.
-	SDL_BlitSurface(_splashScreen, NULL, _screenSurface, NULL);
-
-	// Draw _screenSurface to the window.
-	SDL_UpdateWindowSurface(_window);*/
 }
 
 void Game::Cleanup()
 {
 	SDL_DestroyWindow(_window);
+
 	SDL_DestroyRenderer(_renderer);
+
 	delete _splashScreen;
+
 	_splashScreen = NULL, _window = NULL, _renderer = NULL;
+
 	IMG_Quit();
 	SDL_Quit();
 }
