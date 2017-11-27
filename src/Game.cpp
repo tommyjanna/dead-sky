@@ -1,15 +1,18 @@
 // Game.cpp
 // Implementation of the Game class.
 // Created on October 4, 2017
-// Last modified on October 17, 2017
+// Last modified on October 20, 2017
 
 #include "Game.h"
 
 Game::Game()
 {
-	_window = NULL, _screenSurface = NULL, _splashScreen = NULL;
+	_window = NULL, _splashScreen = NULL, _renderer = NULL;
 
 	InitializeSDL();
+
+	_splashScreen = new SplashScreen(_renderer);
+
 	LoadMedia();
 }
 
@@ -26,6 +29,7 @@ void Game::Run()
 		Input();
 		Update();
 		Draw();
+		SDL_Delay(1000/30);
 	}
 
 	Cleanup();
@@ -35,7 +39,7 @@ bool Game::InitializeSDL()
 {
     bool success = true;
 	
-	if(SDL_Init(SDL_INIT_VIDEO) < 0)
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) // Initialize SDL video subsystem.
 	{
 		printf("Error initializing SDL... Error: %s\n", SDL_GetError());
 		success = false;
@@ -53,25 +57,43 @@ bool Game::InitializeSDL()
 		printf("Error creating SDL window... Error: %s\n", SDL_GetError());
 		success = false;
 	}
-	
-	// This statement attaches the main screen surface to the window.
-	_screenSurface = SDL_GetWindowSurface(_window);
+
+	// Create renderer for _window, this attaches _renderer to _window.
+	// -1 index to setup with accelerated rendering.
+	_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+
+	if(_renderer == NULL)
+	{
+		printf("Error creating SDL renderer... Error: %s\n", SDL_GetError());
+		success = false;
+	}
+
+	else
+	{
+		// Init the renderers draw colour.
+		// SDL_SetRenderDrawColor(renderer, red, green, blue, alpha)
+		SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
+	}
+
+	// Initialize SDL_image subsystem.
+	// This statement sets up the system for handling PNG files.
+	int imgInit = IMG_INIT_PNG;
+	if (!(IMG_Init(imgInit)&imgInit))
+	{
+		printf("Error initializing SDL_image... Error: %s\n", IMG_GetError());
+		success = false;
+	}
 
     return success;
 }
 
-bool Game::LoadMedia()
+void Game::LoadMedia()
 {
-	bool success = true;
+	// TODO: Make LoadMedia() more versatile by adding
+	// GameObject vector support.
+	_splashScreen->_parentGO->_texture->LoadTexture("../assets/graphics/polygonwhale.png");
 
-	_splashScreen = SDL_LoadBMP("../assets/graphics/polygonwhale.bmp");
-	if(_splashScreen == NULL)
-	{
-		printf("Error loading image... Error %s\n", SDL_GetError());
-		success = false;
-	}
-
-	return success;
+	return;
 }
 
 void Game::Input()
@@ -126,21 +148,60 @@ void Game::Update()
 
 	if(IsKeyDown(SDL_SCANCODE_RIGHT))
 		printf("Right\n");
+
+	// Update existing GameObjects
+	for(int i = 0; i < GameObject::_objects.size(); /*conditional increment*/ )
+	{
+		GameObject::_objects[i]->Update();
+
+		// If objects flag to be destroyed is true, swap it and the last
+		// object in the vector, then delete it.
+		// This will help avoid having an empty element in the vector,
+		// and having to shift every element down.
+		if(GameObject::_objects[i]->_toBeDestroyed)
+		{
+			int lastObject = GameObject::_objects.size() - 1;
+			std::swap(GameObject::_objects[i], GameObject::_objects[lastObject]);
+
+			// Delete are free pointer.
+			delete GameObject::_objects[lastObject];
+			GameObject::_objects[lastObject] = NULL;
+			GameObject::_objects.erase(GameObject::_objects.end() - 1);
+
+			// Don't increment i here to update the swapped object.
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+	return;
+	
 }
 
 void Game::Draw()
 {
-	// Update _screenSurface with the first argument.
-	SDL_BlitSurface(_splashScreen, NULL, _screenSurface, NULL);
+	// Clear the renderer.
+	SDL_RenderClear(_renderer);
 
-	// Draw _screenSurface to the window.
-	SDL_UpdateWindowSurface(_window);
+	// Draw to the back buffer.
+	_splashScreen->_parentGO->_texture->Render(0, 0);
+
+	// Update the window.
+	SDL_RenderPresent(_renderer);
 }
 
 void Game::Cleanup()
 {
-    SDL_DestroyWindow(_window);
-	SDL_FreeSurface(_splashScreen);
-	_screenSurface = NULL, _splashScreen = NULL, _window = NULL;
+	SDL_DestroyWindow(_window);
+
+	SDL_DestroyRenderer(_renderer);
+
+	delete _splashScreen;
+
+	_splashScreen = NULL, _window = NULL, _renderer = NULL;
+
+	IMG_Quit();
 	SDL_Quit();
 }

@@ -33,3 +33,11 @@
 
 # Project files
 *.vscode
+*.dSYM
+/Debug/Dead-Sky.tlog
+/Debug
+/Release/Dead-Sky.tlog
+/Release
+/x64/Debug
+/Dead-Sky.vcxproj.filters
+/Dead-Sky.vcxproj

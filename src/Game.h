@@ -6,18 +6,19 @@
 //                       create a new window, handle the game loop,
 //                       handle input, load graphics, and draw to the screen.
 // Created on October 4, 2017
-// Last modified on October 17, 2017
+// Last modified on October 20, 2017
 
 #ifndef GAME_H
 #define GAME_H
 
+#include "GameObjects/SplashScreen.h"
+#include <SDL_image.h>
 #include <SDL.h>
-#include <cstdio>
-#include <string>
 #include <map>
+#include <cstdio>
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 576
 
 class Game
 {
@@ -31,10 +32,10 @@ public:
 private:
 
     bool InitializeSDL();
-    bool LoadMedia();
+    void LoadMedia();
 
     void Input();
-    bool IsKeyDown(int key);
+    bool IsKeyDown(int);
 
     void Update();
     void Draw();
@@ -46,12 +47,10 @@ private:
     // Map for storing keyboard input
     std::map<int, bool> _keyDown;
 
-    SDL_Surface* loadSurface(std::string path);
-    
     SDL_Window* _window;
-    SDL_Surface* _screenSurface;
-    
-    SDL_Surface* _splashScreen;
+    SDL_Renderer* _renderer;
+
+    SplashScreen* _splashScreen;
 };
 
 #endif
