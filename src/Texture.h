@@ -11,11 +11,11 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "GameObject.h"
-#include "Game.h"
 #include <SDL_image.h>
 #include <SDL.h>
+#include <chrono>
 #include <string>
+#include <cmath>
 
 
 class Texture
@@ -36,7 +36,7 @@ public:
 
     void FreeTexture();
 
-    void Fade();
+    void Fade(int);
 
 private:
 
@@ -46,6 +46,10 @@ private:
     int _width, _height;
 
     int _opacity;
+
+    std::chrono::system_clock::time_point _beginningTime;
+    std::chrono::duration<double, std::milli> _elapsedTime;
+    bool _timerRunning;
 };
 
 #endif

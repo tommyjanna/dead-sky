@@ -5,17 +5,15 @@
 
 #include "Game.h"
 
-// Define static members
-SDL_Renderer* Game::_renderer = NULL;
-
 Game::Game()
 {
 	_window = NULL, _splashScreen = NULL, _renderer = NULL;
 
 	InitializeSDL();
-	LoadMedia();
 
-	_splashScreen = new SplashScreen();
+	_splashScreen = new SplashScreen(_renderer);
+
+	LoadMedia();
 }
 
 Game::~Game()
@@ -91,8 +89,9 @@ bool Game::InitializeSDL()
 
 void Game::LoadMedia()
 {
-	//if(_splashScreen->_parentGO != NULL)
-		//_splashScreen->_parentGO->_texture->LoadTexture("../assets/graphics/polygonwhale.png");
+	// TODO: Make LoadMedia() more versatile by adding
+	// GameObject vector support.
+	_splashScreen->_parentGO->_texture->LoadTexture("../assets/graphics/polygonwhale.png");
 
 	return;
 }
@@ -151,23 +150,23 @@ void Game::Update()
 		printf("Right\n");
 
 	// Update existing GameObjects
-	for(int i = 0; _objects.size(); /*conditional increment*/ )
+	for(int i = 0; i < GameObject::_objects.size(); /*conditional increment*/ )
 	{
-		_objects[i]->Update();
+		GameObject::_objects[i]->Update();
 
 		// If objects flag to be destroyed is true, swap it and the last
 		// object in the vector, then delete it.
 		// This will help avoid having an empty element in the vector,
 		// and having to shift every element down.
-		if(_objects[i]->GetToBeDestroyed())
+		if(GameObject::_objects[i]->_toBeDestroyed)
 		{
-			int lastObject = _objects.size() - 1;
-			std::swap(_objects[i], _objects[lastObject]);
+			int lastObject = GameObject::_objects.size() - 1;
+			std::swap(GameObject::_objects[i], GameObject::_objects[lastObject]);
 
 			// Delete are free pointer.
-			delete _objects[lastObject];
-			_objects[lastObject] = NULL;
-			_objects.erase(_objects.end() - 1);
+			delete GameObject::_objects[lastObject];
+			GameObject::_objects[lastObject] = NULL;
+			GameObject::_objects.erase(GameObject::_objects.end() - 1);
 
 			// Don't increment i here to update the swapped object.
 		}
@@ -187,7 +186,7 @@ void Game::Draw()
 	SDL_RenderClear(_renderer);
 
 	// Draw to the back buffer.
-	//_splashScreen->_parentGO->_texture->Render(0, 0);
+	_splashScreen->_parentGO->_texture->Render(0, 0);
 
 	// Update the window.
 	SDL_RenderPresent(_renderer);

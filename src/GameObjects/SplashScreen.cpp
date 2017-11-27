@@ -5,12 +5,17 @@
 
 #include "SplashScreen.h"
 
-SplashScreen::SplashScreen()
+SplashScreen::SplashScreen(SDL_Renderer* renderer) : GameObject(renderer)
 {
-    //_parentGO = GameObject::GetInstace();
+    _parentGO = GetInstace();
+}
+
+SplashScreen::~SplashScreen()
+{
+    
 }
 
 void SplashScreen::Update()
 {
-    _parentGO->_texture->Fade();
+    _parentGO->_texture->Fade(3);
 }

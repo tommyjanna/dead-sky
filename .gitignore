@@ -33,6 +33,7 @@
 
 # Project files
 *.vscode
+*.dSYM
 /Debug/Dead-Sky.tlog
 /Debug
 /Release/Dead-Sky.tlog

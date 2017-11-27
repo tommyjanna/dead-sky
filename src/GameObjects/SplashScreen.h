@@ -12,15 +12,13 @@
 
 #include "../GameObject.h"
 
-class GameObject;
-
-class SplashScreen
+class SplashScreen : public GameObject
 {
 public:
-    SplashScreen();
-    ~SplashScreen() {};
+    SplashScreen(SDL_Renderer*);
+    ~SplashScreen();
 
-    void Update();
+    void Update() override;
 
     GameObject* _parentGO;
 };

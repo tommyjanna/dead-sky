@@ -12,21 +12,13 @@
 #define GAME_H
 
 #include "GameObjects/SplashScreen.h"
-#include "Texture.h"
-#include "GameObject.h"
 #include <SDL_image.h>
 #include <SDL.h>
 #include <map>
-#include <algorithm>
-#include <vector>
-#include <string>
 #include <cstdio>
 
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 576
-
-class GameObject;
-class SplashScreen;
 
 class Game
 {
@@ -36,10 +28,6 @@ public:
     ~Game();
 
     void Run();
-
-    // Leave public because it needs to be accessible by basically everything duuhhh.
-    static SDL_Renderer* _renderer;
-    static std::vector<GameObject*> _objects;
 
 private:
 
@@ -60,6 +48,7 @@ private:
     std::map<int, bool> _keyDown;
 
     SDL_Window* _window;
+    SDL_Renderer* _renderer;
 
     SplashScreen* _splashScreen;
 };

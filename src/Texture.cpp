@@ -13,8 +13,7 @@ Texture::Texture()
     _width = 0;
     _height = 0;
     _opacity = 255;
-
-    _renderer = Game::_renderer;
+    _timerRunning = false;
 
     // Set texture opactiy.
     SDL_SetTextureAlphaMod(_texture, _opacity);
@@ -95,11 +94,22 @@ void Texture::Render(int x, int y)
     SDL_RenderCopy(_renderer, _texture, NULL, &renderRect);
 }
 
-void Texture::Fade()
+void Texture::Fade(int totalTime)
 {
-    if(_opacity != 0)
+    if(!_timerRunning)
     {
-        _opacity--;
+        _beginningTime = std::chrono::system_clock::now();
+        _timerRunning = true;
+        _opacity = 0;
+        SDL_SetTextureAlphaMod(_texture, _opacity);
+    }
+    
+    else
+    {
+        totalTime *= 1000; // Get time in milliseconds.
+        _elapsedTime = std::chrono::system_clock::now() - _beginningTime;
+        
+        _opacity = (-(255/2) * cos((M_PI/totalTime) * _elapsedTime.count())) + (255/2);
         SDL_SetTextureAlphaMod(_texture, _opacity);
     }
 }

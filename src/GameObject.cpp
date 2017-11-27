@@ -5,14 +5,15 @@
 
 #include "GameObject.h"
 
-std::vector<GameObject*> Game::_objects;
+// Declare static members
+std::vector<GameObject*> GameObject::_objects;
 
-GameObject::GameObject()
+GameObject::GameObject(SDL_Renderer* renderer)
 {
     _toBeDestroyed = false;
-    Game::_objects.push_back(this);
+    _objects.push_back(this);
 
-    _texture = new Texture();
+    _texture = new Texture(renderer);
 }
 
 GameObject::~GameObject()
