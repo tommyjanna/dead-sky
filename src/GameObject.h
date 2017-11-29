@@ -29,7 +29,6 @@ public:
 
     static std::vector<GameObject*> _objects;
 
-    GameObject* GetInstace() { return this; }
     bool _toBeDestroyed;
 
     Texture* _texture;

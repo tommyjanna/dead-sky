@@ -7,15 +7,18 @@
 
 SplashScreen::SplashScreen(SDL_Renderer* renderer) : GameObject(renderer)
 {
-    _parentGO = GetInstace();
 }
 
 SplashScreen::~SplashScreen()
 {
-    
+    Texture* g = new Texture();
 }
 
 void SplashScreen::Update()
 {
-    _parentGO->_texture->Fade(3);
+    // Fade the texture for 3 seconds.
+    if(_texture->Fade(3) == true)
+    {
+        _toBeDestroyed = true;
+    }
 }

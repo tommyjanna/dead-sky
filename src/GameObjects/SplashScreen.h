@@ -19,8 +19,6 @@ public:
     ~SplashScreen();
 
     void Update() override;
-
-    GameObject* _parentGO;
 };
 
 #endif

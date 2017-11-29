@@ -94,8 +94,10 @@ void Texture::Render(int x, int y)
     SDL_RenderCopy(_renderer, _texture, NULL, &renderRect);
 }
 
-void Texture::Fade(int totalTime)
+bool Texture::Fade(int totalTime)
 {
+    bool completed = false;
+
     if(!_timerRunning)
     {
         _beginningTime = std::chrono::system_clock::now();
@@ -111,5 +113,13 @@ void Texture::Fade(int totalTime)
         
         _opacity = (-(255/2) * cos((M_PI/totalTime) * _elapsedTime.count())) + (255/2);
         SDL_SetTextureAlphaMod(_texture, _opacity);
+
+        if(_elapsedTime.count() >= totalTime * 2)
+        {
+            _timerRunning = false;
+            completed = true;
+        }
     }
+
+    return completed;
 }

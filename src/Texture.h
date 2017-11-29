@@ -36,7 +36,7 @@ public:
 
     void FreeTexture();
 
-    void Fade(int);
+    bool Fade(int);
 
 private:
 

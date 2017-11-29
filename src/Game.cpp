@@ -91,7 +91,7 @@ void Game::LoadMedia()
 {
 	// TODO: Make LoadMedia() more versatile by adding
 	// GameObject vector support.
-	_splashScreen->_parentGO->_texture->LoadTexture("../assets/graphics/polygonwhale.png");
+	_splashScreen->_texture->LoadTexture("../assets/graphics/polygonwhale.png");
 
 	return;
 }
@@ -185,10 +185,16 @@ void Game::Draw()
 	// Clear the renderer.
 	SDL_RenderClear(_renderer);
 
+
+	for(int i = 0; i < GameObject::_objects.size(); i++ )
+	{
+		GameObject::_objects[i]->_texture->Render(0, 0);
+	}
 	// Draw to the back buffer.
-	_splashScreen->_parentGO->_texture->Render(0, 0);
+	//_splashScreen->_texture->Render(0, 0);
 
 	// Update the window.
+
 	SDL_RenderPresent(_renderer);
 }
 
@@ -197,9 +203,7 @@ void Game::Cleanup()
 	SDL_DestroyWindow(_window);
 
 	SDL_DestroyRenderer(_renderer);
-
-	delete _splashScreen;
-
+	
 	_splashScreen = NULL, _window = NULL, _renderer = NULL;
 
 	IMG_Quit();
