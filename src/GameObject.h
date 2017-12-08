@@ -10,21 +10,20 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-//#include "Game.h"
 #include "Texture.h"
 #include <vector>
-
-class Texture;
 
 class GameObject
 {
 public:
 
     GameObject();
-    GameObject(SDL_Renderer*);
+    GameObject(SDL_Renderer*, std::string);
     virtual ~GameObject();
 
     virtual void Update() = 0; // (= 0) makes this a pure virtual method, so Update() must be implemented.
+    virtual void Draw() = 0;
+    virtual void Destroy() = 0;
     void LoadTexture(std::string);
 
     static std::vector<GameObject*> _objects;
@@ -32,6 +31,8 @@ public:
     bool _toBeDestroyed;
 
     Texture* _texture;
+
+    std::string _name;
 
 private:
 

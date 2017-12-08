@@ -11,7 +11,8 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "GameObjects/SplashScreen.h"
+#include "SceneManager.h"
+#include "GameObject.h"
 #include <SDL_image.h>
 #include <SDL.h>
 #include <map>
@@ -28,6 +29,8 @@ public:
     ~Game();
 
     void Run();
+
+    static SDL_Renderer* _renderer;
 
 private:
 
@@ -48,9 +51,6 @@ private:
     std::map<int, bool> _keyDown;
 
     SDL_Window* _window;
-    SDL_Renderer* _renderer;
-
-    SplashScreen* _splashScreen;
 };
 
 #endif

@@ -10,6 +10,7 @@
 #ifndef SPLASHSCREEN_H
 #define SPLASHSCREEN_H
 
+#include "../SceneManager.h"
 #include "../GameObject.h"
 
 class SplashScreen : public GameObject
@@ -19,6 +20,8 @@ public:
     ~SplashScreen();
 
     void Update() override;
+    void Draw() override;
+    void Destroy() override;
 };
 
 #endif

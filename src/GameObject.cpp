@@ -8,9 +8,10 @@
 // Declare static members
 std::vector<GameObject*> GameObject::_objects;
 
-GameObject::GameObject(SDL_Renderer* renderer)
+GameObject::GameObject(SDL_Renderer* renderer, std::string name)
 {
     _toBeDestroyed = false;
+    _name = name;
     _objects.push_back(this);
 
     _texture = new Texture(renderer);
@@ -18,5 +19,6 @@ GameObject::GameObject(SDL_Renderer* renderer)
 
 GameObject::~GameObject()
 {
-    _texture->FreeTexture();
+    delete _texture;
+    _texture = NULL;
 }

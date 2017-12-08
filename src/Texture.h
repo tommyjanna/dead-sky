@@ -32,7 +32,7 @@ public:
     int GetHeight() { return _height; }
     int GetOpacity() { return _opacity; }
 
-    void Render(int x, int y);
+    void Render(int, int);
 
     void FreeTexture();
 

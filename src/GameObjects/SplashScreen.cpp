@@ -5,13 +5,13 @@
 
 #include "SplashScreen.h"
 
-SplashScreen::SplashScreen(SDL_Renderer* renderer) : GameObject(renderer)
+SplashScreen::SplashScreen(SDL_Renderer* renderer) : GameObject(renderer, "SplashScreen")
 {
+
 }
 
 SplashScreen::~SplashScreen()
 {
-    Texture* g = new Texture();
 }
 
 void SplashScreen::Update()
@@ -21,4 +21,14 @@ void SplashScreen::Update()
     {
         _toBeDestroyed = true;
     }
+}
+
+void SplashScreen::Draw()
+{
+    _texture->Render(0, 0);
+}
+
+void SplashScreen::Destroy()
+{
+    SceneManager::ChangeScene(SceneManager::MENU);
 }
