@@ -18,7 +18,11 @@ public:
     Menu();
 
 private:
-    Button* b;
+    Button* _play;
+    Button* _exit;
+
+    Button* _play2;
+    Button* _exit2;
 };
 
 #endif

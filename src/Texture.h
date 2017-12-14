@@ -11,6 +11,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include <SDL2_ttf/SDL_ttf.h>
 #include <SDL_image.h>
 #include <SDL.h>
 #include <chrono>
@@ -27,10 +28,12 @@ public:
     ~Texture();
 
     void LoadTexture(std::string);
+    bool LoadRenderedText(std::string, SDL_Color);
 
-    int GetWidth() { return _width; }
-    int GetHeight() { return _height; }
-    int GetOpacity() { return _opacity; }
+    TTF_Font* _font;
+
+    int _width, _height;
+    int _opacity;
 
     void Render(int, int);
 
@@ -42,10 +45,6 @@ private:
 
     SDL_Texture* _texture;
     SDL_Renderer* _renderer;
-
-    int _width, _height;
-
-    int _opacity;
 
     std::chrono::system_clock::time_point _beginningTime;
     std::chrono::duration<double, std::milli> _elapsedTime;

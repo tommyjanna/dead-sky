@@ -9,6 +9,7 @@
 Texture::Texture()
 {
     _texture = NULL;
+    _font = NULL;
     
     _width = 0;
     _height = 0;
@@ -22,6 +23,7 @@ Texture::Texture()
 Texture::Texture(SDL_Renderer* renderer)
 {
     _texture = NULL;
+    _font = NULL;
 
     _width = 0;
     _height = 0;
@@ -68,6 +70,41 @@ void Texture::LoadTexture(std::string path)
         // Free temporary surface as data is now stored in an SDL_Texture.
         SDL_FreeSurface(loadedSurface);
     }
+}
+
+bool Texture::LoadRenderedText(std::string text, SDL_Color colour)
+{
+    //FreeTexture();
+
+    // Create surface with text.
+    SDL_Surface* textSurface = TTF_RenderText_Solid(_font, text.c_str(), colour);
+
+    if(textSurface == NULL)
+    {
+        printf("Error rendering text surface... Error %s\n", TTF_GetError());
+    }
+
+    else
+    {
+        // Convert surface to SDL_Texture.
+        _texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+
+        if(_texture == NULL)
+        {
+            printf("Error creating texture... Error %s\n", SDL_GetError());
+        }
+
+        else
+        {
+            _width = textSurface->w;
+            _height = textSurface->h;
+        }
+
+        // Free surface
+        SDL_FreeSurface(textSurface);
+    }
+
+    return _texture != NULL;
 }
 
 void Texture::FreeTexture()

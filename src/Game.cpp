@@ -7,16 +7,15 @@
 
 // Declare static members.
 SDL_Renderer* Game::_renderer;
+bool Game::_quit;
 
 Game::Game()
 {
-	_window = NULL, _renderer = NULL;
+	_window = NULL, _renderer = NULL, _quit = false;
 
 	InitializeSDL();
 
 	SceneManager::ChangeScene(SceneManager::SPLASHSCREEN);
-
-	LoadMedia();
 }
 
 Game::~Game()
@@ -48,7 +47,7 @@ bool Game::InitializeSDL()
 		success = false;
 	}
 
-	_window = SDL_CreateWindow("Game", 
+	_window = SDL_CreateWindow("Dead Sky", 
 								SDL_WINDOWPOS_UNDEFINED, 
 								SDL_WINDOWPOS_UNDEFINED, 
 								SCREEN_WIDTH, 
@@ -81,21 +80,20 @@ bool Game::InitializeSDL()
 	// Initialize SDL_image subsystem.
 	// This statement sets up the system for handling PNG files.
 	int imgInit = IMG_INIT_PNG;
-	if (!(IMG_Init(imgInit)&imgInit))
+	if(!(IMG_Init(imgInit)&imgInit))
 	{
 		printf("Error initializing SDL_image... Error: %s\n", IMG_GetError());
 		success = false;
 	}
 
+	// Initialize SDL_ttf subsystem for working with true type fonts.
+	if(TTF_Init() == -1)
+	{
+		printf("Error initializing SDL_ttf... Error: %s\n", TTF_GetError());
+		success = false;
+	}
+
     return success;
-}
-
-void Game::LoadMedia()
-{
-	// TODO: Make LoadMedia() more versatile by adding
-	// GameObject vector support.
-
-	return;
 }
 
 void Game::Input()
@@ -208,6 +206,7 @@ void Game::Cleanup()
 	
 	_window = NULL, Game::_renderer = NULL;
 
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }

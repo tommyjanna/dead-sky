@@ -22,7 +22,8 @@ public:
         SPLASHSCREEN,
         MENU,
         SETUP,
-        GAME
+        GAME,
+        EXIT
     };
 
     static void ChangeScene(int);

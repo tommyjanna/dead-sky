@@ -9,11 +9,13 @@
 #define BUTTON_H
 
 #include "../GameObject.h"
+#include <functional>
 
 class Button : public GameObject
 {
 public:
-    Button(SDL_Renderer*, int, int, int, int);
+    Button(SDL_Renderer*, int, int, int, int, std::function<void()> const& event);
+    Button(SDL_Renderer*, int, int, int, int, int, std::string, std::function<void()> const& event);
     ~Button();
 
     void Update() override;
@@ -24,6 +26,8 @@ private:
     int _buttonWidth, _buttonHeight;
     int _x, _y;
 
+    std::function<void()> _event;
+    
     enum BUTTON_STATES
     {
         BUTTON_MOUSE_OUT,

@@ -21,6 +21,12 @@ void SceneManager::ChangeScene(int scene)
         Menu m = Menu();
         break;
     }
+
+    case SceneManager::EXIT:
+    {
+        Game::_quit = true;
+        break;
+    }
     }
     
 

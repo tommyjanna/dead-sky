@@ -31,11 +31,13 @@ public:
     void Run();
 
     static SDL_Renderer* _renderer;
+    
+    // Game loop exit flag.
+    static bool _quit;
 
 private:
 
     bool InitializeSDL();
-    void LoadMedia();
 
     void Input();
     bool IsKeyDown(int);
@@ -43,9 +45,6 @@ private:
     void Update();
     void Draw();
     void Cleanup();
-
-    // Game loop exit flag.
-    bool _quit;
 
     // Map for storing keyboard input
     std::map<int, bool> _keyDown;
