@@ -8,10 +8,13 @@
 // Declare static members.
 SDL_Renderer* Game::_renderer;
 bool Game::_quit;
+bool* Game::_mouseInput;
 
 Game::Game()
 {
 	_window = NULL, _renderer = NULL, _quit = false;
+
+	_mouseInput = new bool[4];
 
 	InitializeSDL();
 
@@ -101,6 +104,12 @@ void Game::Input()
 	// Variable to hold next event in the queue.
     SDL_Event e;
 
+	// Reset mouse input.
+	for(int i = 0; i < 4; i++)
+	{
+		_mouseInput[i] = false;
+	}
+
 	// SDL_PollEvent pulls event from the event queue and stores it in e.
 	// e will be assigned NULL when the queue is empty.
     while(SDL_PollEvent(&e) != 0)
@@ -114,8 +123,21 @@ void Game::Input()
         case SDL_KEYDOWN: // Key push.
 			_keyDown[e.key.keysym.scancode] = true;
 			break;
+
 		case SDL_KEYUP: // Key release.
 			_keyDown[e.key.keysym.scancode] = false;
+			break;
+
+		case SDL_MOUSEMOTION: // Mouse movement.
+			_mouseInput[0] = true;
+			break;
+
+		case SDL_MOUSEBUTTONDOWN: // Mouse click.
+			_mouseInput[1] = true;
+			break;
+
+		case SDL_MOUSEBUTTONUP:  // Mouse released.
+			_mouseInput[2] = true;
 			break;
         }
     }

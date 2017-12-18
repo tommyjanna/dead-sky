@@ -5,7 +5,7 @@
 
 #include "SplashScreen.h"
 
-SplashScreen::SplashScreen(SDL_Renderer* renderer) : GameObject(renderer, "SplashScreen")
+SplashScreen::SplashScreen(int x, int y, int width, int height, SDL_Renderer* renderer) : GameObject(x, y, width, height, renderer, "SplashScreen")
 {
 
 }
@@ -25,7 +25,7 @@ void SplashScreen::Update()
 
 void SplashScreen::Draw()
 {
-    _texture->Render(0, 0);
+    _texture->Render();
 }
 
 void SplashScreen::Destroy()

@@ -7,23 +7,24 @@
 
 Menu::Menu()
 {
-    _play = new Button(Game::_renderer, 
-                        0, 0, 
-                        SCREEN_WIDTH / 2 - 85, 50,
-                        60, "PLAY", NULL);
-    
-    _exit = new Button(Game::_renderer, 
-                        0, 0, 
-                        SCREEN_WIDTH / 2 - 85, 50,
-                        60, "EXIT", NULL);
+    _title = new Blank(Game::_renderer,
+                        SCREEN_WIDTH / 2 - 185, 50,
+                        0, 0,
+                        60, "DEAD SKY");
 
-    _play2 = new Button(Game::_renderer, 
-                        0, 0, 
+    _play = new Button(Game::_renderer, 
                         SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2,
+                        88, 37,
                         30, "PLAY", []() { SceneManager::ChangeScene(SceneManager::GAME); });
     
-    _exit2 = new Button(Game::_renderer, 
-                        0, 0, 
+    _exit = new Button(Game::_renderer, 
                         SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 60,
+                        88, 37, 
                         30, "EXIT", []() { SceneManager::ChangeScene(SceneManager::EXIT); });
+
+    _bg = new Blank(Game::_renderer,
+                    0, 0,
+                    SCREEN_WIDTH, SCREEN_HEIGHT);
+    
+    _bg->_texture->LoadTexture("../assets/graphics/background.png");
 }

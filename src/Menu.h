@@ -11,6 +11,9 @@
 
 #include "SceneManager.h"
 #include "GameObjects/Button.h"
+#include "GameObjects/Blank.h"
+
+class Button;
 
 class Menu
 {
@@ -18,11 +21,12 @@ public:
     Menu();
 
 private:
+
     Button* _play;
     Button* _exit;
 
-    Button* _play2;
-    Button* _exit2;
+    Blank* _bg;
+    Blank* _title;
 };
 
 #endif

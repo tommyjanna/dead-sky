@@ -5,10 +5,12 @@
 
 #include "Button.h"
 
-Button::Button(SDL_Renderer* renderer, int width, int height, int x, int y, std::function<void()> const& event) : GameObject(renderer, "Button")
+Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, std::function<void()> const& event) : GameObject(x, y, width, height, renderer, "Button")
 {
     _buttonWidth = width;
     _buttonHeight = height;
+
+    _down = false;
 
     _x = x;
     _y = y;
@@ -18,7 +20,7 @@ Button::Button(SDL_Renderer* renderer, int width, int height, int x, int y, std:
     return;
 }
 
-Button::Button(SDL_Renderer* renderer, int width, int height, int x, int y, int fontSize, std::string text, std::function<void()> const& event) : GameObject(renderer, "Button + Text")
+Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, int fontSize, std::string text, std::function<void()> const& event) : GameObject(x, y, width, height, renderer, "Button + Text")
 {
     _buttonWidth = width;
     _buttonHeight = height;
@@ -52,12 +54,70 @@ Button::~Button()
 
 void Button::Update()
 {
+    bool inside = true; // Innocent until proven guilty :)
 
+    // Get mouse pos.
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
+
+    // Check mouse pos with button boundaries.
+    if(mouseX < _x)
+    {
+        inside = false;
+    }
+
+    else if(mouseX > _x + _buttonWidth)
+    {
+        inside = false;
+    }
+
+    else if(mouseY < _y)
+    {
+        inside = false;
+    }
+
+    else if(mouseY > _y + _buttonHeight)
+    {
+        inside = false;
+    }
+
+    if(!inside)
+    {
+        _down = false;
+        _texture->SetColor(255, 255, 255);
+    }
+
+    else
+    {
+        if(Game::_mouseInput[0]) // Mouse over.
+        {
+            _texture->SetColor(255, 0, 255);
+        }
+
+        if(Game::_mouseInput[1]) // Mouse down.
+        {
+            _down = true;
+            _texture->SetColor(200, 100, 200);
+        }
+
+        if(Game::_mouseInput[2]) // Mouse up.
+        {
+            if(_down)
+            {
+                _down = false;
+
+                _texture->SetColor(255, 0, 255);
+                
+                // Run buttons _event action.
+                _event();
+            }
+        }
+    }
 }
 
 void Button::Draw()
 {
-    _texture->Render(_x, _y);
+    _texture->Render();
 }
 
 void Button::Destroy()

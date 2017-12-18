@@ -23,28 +23,32 @@ class Texture
 {
 public:
     
-    Texture();
-    Texture(SDL_Renderer*);
+    Texture(int, int, int, int);
+    Texture(int, int, int, int, SDL_Renderer*);
     ~Texture();
 
     void LoadTexture(std::string);
     bool LoadRenderedText(std::string, SDL_Color);
 
+
     TTF_Font* _font;
 
-    int _width, _height;
     int _opacity;
 
-    void Render(int, int);
+    void Render();
+    
+    void SetColor(Uint8, Uint8, Uint8);
+    bool Fade(int);
 
     void FreeTexture();
-
-    bool Fade(int);
 
 private:
 
     SDL_Texture* _texture;
     SDL_Renderer* _renderer;
+
+    int _x, _y;
+    int _width, _height;
 
     std::chrono::system_clock::time_point _beginningTime;
     std::chrono::duration<double, std::milli> _elapsedTime;

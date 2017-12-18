@@ -31,6 +31,9 @@ public:
     void Run();
 
     static SDL_Renderer* _renderer;
+
+    // Array for storing mouse input.
+    static bool* _mouseInput;
     
     // Game loop exit flag.
     static bool _quit;

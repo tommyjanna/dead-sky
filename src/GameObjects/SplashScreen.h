@@ -16,7 +16,7 @@
 class SplashScreen : public GameObject
 {
 public:
-    SplashScreen(SDL_Renderer*);
+    SplashScreen(int, int, int, int, SDL_Renderer*);
     ~SplashScreen();
 
     void Update() override;

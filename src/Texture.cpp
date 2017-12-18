@@ -6,13 +6,15 @@
 #include "Texture.h"
 
 
-Texture::Texture()
+Texture::Texture(int x, int y, int width, int height)
 {
     _texture = NULL;
     _font = NULL;
     
-    _width = 0;
-    _height = 0;
+    _x = x;
+    _y = y;
+    _width = width;
+    _height = height;
     _opacity = 255;
     _timerRunning = false;
 
@@ -20,13 +22,15 @@ Texture::Texture()
     SDL_SetTextureAlphaMod(_texture, _opacity);
 }
 
-Texture::Texture(SDL_Renderer* renderer)
+Texture::Texture(int x, int y, int width, int height, SDL_Renderer* renderer)
 {
     _texture = NULL;
     _font = NULL;
 
-    _width = 0;
-    _height = 0;
+    _x = x;
+    _y = y;
+    _width = width;
+    _height = height;
     _opacity = 255;
 
     _renderer = renderer;
@@ -117,18 +121,23 @@ void Texture::FreeTexture()
     }
 }
 
-void Texture::Render(int x, int y)
+void Texture::Render()
 {
     // Target rendering rectangle.
     SDL_Rect renderRect =
     {
-        x,
-        y,
+        _x,
+        _y,
         _width,
         _height
     };
 
     SDL_RenderCopy(_renderer, _texture, NULL, &renderRect);
+}
+
+void Texture::SetColor(Uint8 red, Uint8 green, Uint8 blue)
+{
+    SDL_SetTextureColorMod(_texture, red, green, blue);
 }
 
 bool Texture::Fade(int totalTime)

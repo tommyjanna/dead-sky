@@ -5,7 +5,7 @@
 //                       objects in the game such as position, texture 
 //                       and an abstract update function.
 // Created on October 24, 2017
-// Last modified on October 24, 2017
+// Last modified on December 16, 2017
 
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
@@ -18,7 +18,7 @@ class GameObject
 public:
 
     GameObject();
-    GameObject(SDL_Renderer*, std::string);
+    GameObject(int, int, int, int, SDL_Renderer*, std::string);
     virtual ~GameObject();
 
     virtual void Update() = 0; // (= 0) makes this a pure virtual method, so Update() must be implemented.

@@ -9,6 +9,7 @@
 #define BUTTON_H
 
 #include "../GameObject.h"
+#include "../Game.h"
 #include <functional>
 
 class Button : public GameObject
@@ -23,19 +24,13 @@ public:
     void Destroy() override;
 
 private:
+
     int _buttonWidth, _buttonHeight;
     int _x, _y;
 
+    bool _down;
+
     std::function<void()> _event;
-    
-    enum BUTTON_STATES
-    {
-        BUTTON_MOUSE_OUT,
-        BUTTON_MOUSE_OVER_MOTION,
-        BUTTON_MOUSE_DOWN,
-        BUTTON_MOUSE_UP,
-        BUTTON_TOTAL
-    };
 };
 
 #endif
