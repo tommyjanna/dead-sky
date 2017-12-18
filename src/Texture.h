@@ -2,7 +2,7 @@
 // Created by Tommy Janna
 // Class name: Texture
 // Description of class: Texture wrapper class for SDL_Textures.
-//                       This class extends the functionality of SDL_Textures
+//                       This class extends the functionality of SDL_Textures,
 //                       with methods to easily access properties,
 //                       blend/fade in or out, and render.
 // Created on October 20, 2017
@@ -23,12 +23,12 @@ class Texture
 {
 public:
     
-    Texture(int, int, int, int);
-    Texture(int, int, int, int, SDL_Renderer*);
+    Texture(int x, int y, int width, int height);
+    Texture(int x, int y, int width, int height, SDL_Renderer* renderer);
     ~Texture();
 
-    void LoadTexture(std::string);
-    bool LoadRenderedText(std::string, SDL_Color);
+    void LoadTexture(std::string path);
+    bool LoadRenderedText(std::string text, SDL_Color colour);
 
 
     TTF_Font* _font;
@@ -37,8 +37,8 @@ public:
 
     void Render();
     
-    void SetColor(Uint8, Uint8, Uint8);
-    bool Fade(int);
+    void SetColor(Uint8 red, Uint8 green, Uint8 blue);
+    bool Fade(int totalTime);
 
     void FreeTexture();
 

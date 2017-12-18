@@ -26,7 +26,7 @@ public:
         EXIT
     };
 
-    static void ChangeScene(int);
+    static void ChangeScene(int scene);
 };
 
 #endif

@@ -1,8 +1,8 @@
 // GameObject.h
 // Created by Tommy Janna
 // Class name: GameObject
-// Description of class: GameObject class which implements all necessary members for
-//                       objects in the game such as position, texture 
+// Description of class: GameObject class which implements all necessary members for,
+//                       objects in the game such as position, texture,
 //                       and an abstract update function.
 // Created on October 24, 2017
 // Last modified on December 16, 2017
@@ -18,7 +18,7 @@ class GameObject
 public:
 
     GameObject();
-    GameObject(int, int, int, int, SDL_Renderer*, std::string);
+    GameObject(int x, int y, int width, int height, SDL_Renderer* renderer, std::string name);
     virtual ~GameObject();
 
     virtual void Update() = 0; // (= 0) makes this a pure virtual method, so Update() must be implemented.
