@@ -210,10 +210,16 @@ void Game::Draw()
 	// Clear the renderer.
 	SDL_RenderClear(Game::_renderer);
 
-	for(int i = 0; i < GameObject::_objects.size(); i++)
+	for(int i = 1; i < 5; i++)
 	{
-		// Draw to the back buffer.
-		GameObject::_objects[i]->Draw();
+		for(int j = 0; j < GameObject::_objects.size(); j++)
+		{
+			if(GameObject::_objects[j]->_layer == i)
+			{
+				// Draw to the back buffer.
+				GameObject::_objects[j]->Draw();
+			}
+		}
 	}
 
 	// Update the window.

@@ -11,13 +11,13 @@ void SceneManager::ChangeScene(int scene)
     {
     case SceneManager::SPLASHSCREEN:
     {
-        SplashScreen* s = new SplashScreen(0, 0, 1024, 576, Game::_renderer);
+        SplashScreen* s = new SplashScreen(0, 0, 1024, 576, 4, Game::_renderer);
         s->_texture->LoadTexture("../assets/graphics/polygonwhale.png");
         break;
     }
 
     case SceneManager::MENU:
-    {
+    {   
         Menu m = Menu();
         break;
     }

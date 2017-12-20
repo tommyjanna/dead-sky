@@ -18,7 +18,7 @@ class GameObject
 public:
 
     GameObject();
-    GameObject(int x, int y, int width, int height, SDL_Renderer* renderer, std::string name);
+    GameObject(int x, int y, int width, int height, Uint8 layer, SDL_Renderer* renderer, std::string name);
     virtual ~GameObject();
 
     virtual void Update() = 0; // (= 0) makes this a pure virtual method, so Update() must be implemented.
@@ -29,6 +29,8 @@ public:
     static std::vector<GameObject*> _objects;
 
     bool _toBeDestroyed;
+
+    Uint8 _layer;
 
     Texture* _texture;
 

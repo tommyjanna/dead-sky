@@ -15,8 +15,8 @@
 class Button : public GameObject
 {
 public:
-    Button(SDL_Renderer* renderer, int x, int y, int width, int height, std::function<void()> const& event);
-    Button(SDL_Renderer*, int x, int y, int width, int height, int fontSize, std::string, std::function<void()> const& event);
+    Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, std::function<void()> const& event);
+    Button(SDL_Renderer*, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string, std::function<void()> const& event);
     ~Button();
 
     void Update() override;

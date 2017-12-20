@@ -5,7 +5,7 @@
 
 #include "Button.h"
 
-Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, std::function<void()> const& event) : GameObject(x, y, width, height, renderer, "Button")
+Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, std::function<void()> const& event) : GameObject(x, y, width, height, layer, renderer, "Button")
 {
     _buttonWidth = width;
     _buttonHeight = height;
@@ -20,7 +20,7 @@ Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, std:
     return;
 }
 
-Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, int fontSize, std::string text, std::function<void()> const& event) : GameObject(x, y, width, height, renderer, "Button + Text")
+Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string text, std::function<void()> const& event) : GameObject(x, y, width, height, layer, renderer, "Button + Text")
 {
     _buttonWidth = width;
     _buttonHeight = height;

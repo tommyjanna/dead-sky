@@ -5,12 +5,12 @@
 
 #include "Blank.h"
 
-Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height) : GameObject(x, y, width, height, renderer, "Blank")
+Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer) : GameObject(x, y, width, height, layer, renderer, "Blank")
 {
 
 }
 
-Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, int fontSize, std::string text) : GameObject(x, y, width, height, renderer, "Blank")
+Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string text) : GameObject(x, y, width, height, layer, renderer, "Blank")
 {
 
     _texture->_font = TTF_OpenFont("../assets/fonts/lilliputsteps.ttf", fontSize);

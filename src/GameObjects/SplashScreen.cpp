@@ -5,7 +5,7 @@
 
 #include "SplashScreen.h"
 
-SplashScreen::SplashScreen(int x, int y, int width, int height, SDL_Renderer* renderer) : GameObject(x, y, width, height, renderer, "SplashScreen")
+SplashScreen::SplashScreen(int x, int y, int width, int height, Uint8 layer, SDL_Renderer* renderer) : GameObject(x, y, width, height, layer, renderer, "SplashScreen")
 {
 
 }
