@@ -5,7 +5,6 @@
 
 #include "Texture.h"
 
-
 Texture::Texture(int x, int y, int width, int height)
 {
     _texture = NULL;
@@ -76,12 +75,48 @@ void Texture::LoadTexture(std::string path)
     }
 }
 
+bool Texture::LoadRenderedText(std::string text)
+{
+    SDL_Color colour = { 0xFF, 0xFF, 0xFF };
+    //FreeTexture();
+
+    // Create surface with text.
+    SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(_font, text.c_str(), colour, 575);
+
+    if(textSurface == NULL)
+    {
+        printf("Error rendering text surface... Error %s\n", TTF_GetError());
+    }
+
+    else
+    {
+        // Convert surface to SDL_Texture.
+        _texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+
+        if(_texture == NULL)
+        {
+            printf("Error creating texture... Error %s\n", SDL_GetError());
+        }
+
+        else
+        {
+            _width = textSurface->w;
+            _height = textSurface->h;
+        }
+
+        // Free surface
+        SDL_FreeSurface(textSurface);
+    }
+
+    return _texture != NULL;
+}
+
 bool Texture::LoadRenderedText(std::string text, SDL_Color colour)
 {
     //FreeTexture();
 
     // Create surface with text.
-    SDL_Surface* textSurface = TTF_RenderText_Solid(_font, text.c_str(), colour);
+    SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(_font, text.c_str(), colour, 575);
 
     if(textSurface == NULL)
     {

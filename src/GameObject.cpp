@@ -14,6 +14,7 @@ GameObject::GameObject(int x, int y, int width, int height, Uint8 layer, SDL_Ren
     _name = name;
     _objects.push_back(this);
     _layer = layer;
+    _show = true;
 
     _texture = new Texture(x, y, width, height, renderer);
 }

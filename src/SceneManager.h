@@ -11,8 +11,11 @@
 #define SCENEMANAGER_H
 
 #include "GameObjects/SplashScreen.h"
+#include "GameObjects/Ship.h"
 #include "Menu.h"
 #include "Game.h"
+
+class Menu;
 
 class SceneManager
 {
@@ -27,6 +30,9 @@ public:
     };
 
     static void ChangeScene(int scene);
+
+private:
+    static Menu* _menu;
 };
 
 #endif

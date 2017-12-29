@@ -28,6 +28,7 @@ public:
     ~Texture();
 
     void LoadTexture(std::string path);
+    bool LoadRenderedText(std::string text);
     bool LoadRenderedText(std::string text, SDL_Color colour);
 
 

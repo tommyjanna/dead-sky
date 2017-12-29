@@ -29,6 +29,7 @@ public:
     static std::vector<GameObject*> _objects;
 
     bool _toBeDestroyed;
+    bool _show;
 
     Uint8 _layer;
 

@@ -22,6 +22,19 @@ void SceneManager::ChangeScene(int scene)
         break;
     }
 
+    case SceneManager::SETUP:
+    {
+        break;
+    }
+
+    case SceneManager::GAME:
+    {
+        Ship* ship = new Ship(2, Game::_renderer);
+        ship->_texture->LoadTexture("../assets/graphics/spaceship.png");
+
+        break;
+    }
+
     case SceneManager::EXIT:
     {
         Game::_quit = true;

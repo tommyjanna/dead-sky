@@ -40,7 +40,10 @@ void Blank::Update()
 
 void Blank::Draw()
 {
-    _texture->Render();
+    if(_show)
+    {
+        _texture->Render();
+    }
 }
 
 void Blank::Destroy()

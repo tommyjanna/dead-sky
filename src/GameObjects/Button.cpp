@@ -5,10 +5,12 @@
 
 #include "Button.h"
 
-Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, std::function<void()> const& event) : GameObject(x, y, width, height, layer, renderer, "Button")
+Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, std::function<void()> const& event, bool menuButton) : GameObject(x, y, width, height, layer, renderer, "Button")
 {
     _buttonWidth = width;
     _buttonHeight = height;
+
+    _menuButton = menuButton;
 
     _down = false;
 
@@ -20,10 +22,12 @@ Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint
     return;
 }
 
-Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string text, std::function<void()> const& event) : GameObject(x, y, width, height, layer, renderer, "Button + Text")
+Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string text, std::function<void()> const& event, bool menuButton) : GameObject(x, y, width, height, layer, renderer, "Button + Text")
 {
     _buttonWidth = width;
     _buttonHeight = height;
+
+    _menuButton = menuButton;
 
     _x = x;
     _y = y;
@@ -108,6 +112,11 @@ void Button::Update()
 
                 _texture->SetColor(255, 0, 255);
                 
+                if(_menuButton)
+                {
+                    Menu::Destroy();
+                }
+
                 // Run buttons _event action.
                 _event();
             }
@@ -117,7 +126,10 @@ void Button::Update()
 
 void Button::Draw()
 {
-    _texture->Render();
+    if(_show)
+    {
+        _texture->Render();
+    }
 }
 
 void Button::Destroy()

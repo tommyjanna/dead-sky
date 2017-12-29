@@ -19,14 +19,15 @@ class Menu
 {
 public:
     Menu();
+    static void Destroy();
 
 private:
 
-    Button* _play;
-    Button* _exit;
+    static Button* _play;
+    static Button* _exit;
 
-    Blank* _bg;
-    Blank* _title;
+    static Blank* _bg;
+    static Blank* _title;
 };
 
 #endif

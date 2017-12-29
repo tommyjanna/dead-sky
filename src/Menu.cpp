@@ -5,6 +5,12 @@
 
 #include "Menu.h"
 
+// Declare static members.
+Button* Menu::_play;
+Button* Menu::_exit;
+Blank* Menu::_bg;
+Blank* Menu::_title;
+
 Menu::Menu()
 {
     _bg = new Blank(Game::_renderer,
@@ -22,10 +28,18 @@ Menu::Menu()
     _play = new Button(Game::_renderer, 
                         SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2,
                         88, 37, 4,
-                        30, "PLAY", []() { SceneManager::ChangeScene(SceneManager::GAME); });
+                        30, "PLAY", []() { SceneManager::ChangeScene(SceneManager::GAME); }, true);
     
     _exit = new Button(Game::_renderer, 
                         SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 60,
                         88, 37, 4,
-                        30, "EXIT", []() { SceneManager::ChangeScene(SceneManager::EXIT); });
+                        30, "EXIT", []() { SceneManager::ChangeScene(SceneManager::EXIT); }, true);
+}
+
+void Menu::Destroy()
+{
+    _title->_toBeDestroyed = true;
+    _play->_toBeDestroyed = true;
+    _exit->_toBeDestroyed = true;
+
 }
