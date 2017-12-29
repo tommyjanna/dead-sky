@@ -5,17 +5,30 @@
 
 #include "SplashScreen.h"
 
-SplashScreen::SplashScreen(SDL_Renderer* renderer) : GameObject(renderer)
+SplashScreen::SplashScreen(int x, int y, int width, int height, Uint8 layer, SDL_Renderer* renderer) : GameObject(x, y, width, height, layer, renderer, "SplashScreen")
 {
-    _parentGO = GetInstace();
+
 }
 
 SplashScreen::~SplashScreen()
 {
-    
 }
 
 void SplashScreen::Update()
 {
-    _parentGO->_texture->Fade(3);
+    // Fade the texture for 3 seconds.
+    if(_texture->Fade(3) == true)
+    {
+        _toBeDestroyed = true;
+    }
+}
+
+void SplashScreen::Draw()
+{
+    _texture->Render();
+}
+
+void SplashScreen::Destroy()
+{
+    SceneManager::ChangeScene(SceneManager::MENU);
 }

@@ -5,15 +5,20 @@
 
 #include "Game.h"
 
+// Declare static members.
+SDL_Renderer* Game::_renderer;
+bool Game::_quit;
+bool* Game::_mouseInput;
+
 Game::Game()
 {
-	_window = NULL, _splashScreen = NULL, _renderer = NULL;
+	_window = NULL, _renderer = NULL, _quit = false;
+
+	_mouseInput = new bool[4];
 
 	InitializeSDL();
 
-	_splashScreen = new SplashScreen(_renderer);
-
-	LoadMedia();
+	SceneManager::ChangeScene(SceneManager::SPLASHSCREEN);
 }
 
 Game::~Game()
@@ -45,7 +50,7 @@ bool Game::InitializeSDL()
 		success = false;
 	}
 
-	_window = SDL_CreateWindow("Game", 
+	_window = SDL_CreateWindow("Dead Sky", 
 								SDL_WINDOWPOS_UNDEFINED, 
 								SDL_WINDOWPOS_UNDEFINED, 
 								SCREEN_WIDTH, 
@@ -60,9 +65,9 @@ bool Game::InitializeSDL()
 
 	// Create renderer for _window, this attaches _renderer to _window.
 	// -1 index to setup with accelerated rendering.
-	_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+	Game::_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
 
-	if(_renderer == NULL)
+	if(Game::_renderer == NULL)
 	{
 		printf("Error creating SDL renderer... Error: %s\n", SDL_GetError());
 		success = false;
@@ -72,34 +77,38 @@ bool Game::InitializeSDL()
 	{
 		// Init the renderers draw colour.
 		// SDL_SetRenderDrawColor(renderer, red, green, blue, alpha)
-		SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
+		SDL_SetRenderDrawColor(Game::_renderer, 0x00, 0x00, 0x00, 0xFF);
 	}
 
 	// Initialize SDL_image subsystem.
 	// This statement sets up the system for handling PNG files.
 	int imgInit = IMG_INIT_PNG;
-	if (!(IMG_Init(imgInit)&imgInit))
+	if(!(IMG_Init(imgInit)&imgInit))
 	{
 		printf("Error initializing SDL_image... Error: %s\n", IMG_GetError());
+		success = false;
+	}
+
+	// Initialize SDL_ttf subsystem for working with true type fonts.
+	if(TTF_Init() == -1)
+	{
+		printf("Error initializing SDL_ttf... Error: %s\n", TTF_GetError());
 		success = false;
 	}
 
     return success;
 }
 
-void Game::LoadMedia()
-{
-	// TODO: Make LoadMedia() more versatile by adding
-	// GameObject vector support.
-	_splashScreen->_parentGO->_texture->LoadTexture("../assets/graphics/polygonwhale.png");
-
-	return;
-}
-
 void Game::Input()
 {
 	// Variable to hold next event in the queue.
     SDL_Event e;
+
+	// Reset mouse input.
+	for(int i = 0; i < 4; i++)
+	{
+		_mouseInput[i] = false;
+	}
 
 	// SDL_PollEvent pulls event from the event queue and stores it in e.
 	// e will be assigned NULL when the queue is empty.
@@ -114,8 +123,21 @@ void Game::Input()
         case SDL_KEYDOWN: // Key push.
 			_keyDown[e.key.keysym.scancode] = true;
 			break;
+
 		case SDL_KEYUP: // Key release.
 			_keyDown[e.key.keysym.scancode] = false;
+			break;
+
+		case SDL_MOUSEMOTION: // Mouse movement.
+			_mouseInput[0] = true;
+			break;
+
+		case SDL_MOUSEBUTTONDOWN: // Mouse click.
+			_mouseInput[1] = true;
+			break;
+
+		case SDL_MOUSEBUTTONUP:  // Mouse released.
+			_mouseInput[2] = true;
 			break;
         }
     }
@@ -160,15 +182,19 @@ void Game::Update()
 		// and having to shift every element down.
 		if(GameObject::_objects[i]->_toBeDestroyed)
 		{
+			GameObject::_objects[i]->Destroy();
+
 			int lastObject = GameObject::_objects.size() - 1;
 			std::swap(GameObject::_objects[i], GameObject::_objects[lastObject]);
-
-			// Delete are free pointer.
+			
 			delete GameObject::_objects[lastObject];
 			GameObject::_objects[lastObject] = NULL;
-			GameObject::_objects.erase(GameObject::_objects.end() - 1);
+			GameObject::_objects.pop_back(); // Removes the last element from the vector.
 
-			// Don't increment i here to update the swapped object.
+			// Don't increment i here to update the swapped object,
+			// unless vector is empty, in which we want to exit the loop.
+			//if(GameObject::_objects.empty())
+			i++;
 		}
 		else
 		{
@@ -177,31 +203,38 @@ void Game::Update()
 	}
 
 	return;
-	
 }
 
 void Game::Draw()
 {
 	// Clear the renderer.
-	SDL_RenderClear(_renderer);
+	SDL_RenderClear(Game::_renderer);
 
-	// Draw to the back buffer.
-	_splashScreen->_parentGO->_texture->Render(0, 0);
+	for(int i = 1; i < 5; i++)
+	{
+		for(int j = 0; j < GameObject::_objects.size(); j++)
+		{
+			if(GameObject::_objects[j]->_layer == i)
+			{
+				// Draw to the back buffer.
+				GameObject::_objects[j]->Draw();
+			}
+		}
+	}
 
 	// Update the window.
-	SDL_RenderPresent(_renderer);
+	SDL_RenderPresent(Game::_renderer);
 }
 
 void Game::Cleanup()
 {
 	SDL_DestroyWindow(_window);
 
-	SDL_DestroyRenderer(_renderer);
+	SDL_DestroyRenderer(Game::_renderer);
+	
+	_window = NULL, Game::_renderer = NULL;
 
-	delete _splashScreen;
-
-	_splashScreen = NULL, _window = NULL, _renderer = NULL;
-
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }

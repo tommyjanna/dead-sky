@@ -11,7 +11,8 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "GameObjects/SplashScreen.h"
+#include "SceneManager.h"
+#include "GameObject.h"
 #include <SDL_image.h>
 #include <SDL.h>
 #include <map>
@@ -29,10 +30,17 @@ public:
 
     void Run();
 
+    static SDL_Renderer* _renderer;
+
+    // Array for storing mouse input.
+    static bool* _mouseInput;
+    
+    // Game loop exit flag.
+    static bool _quit;
+
 private:
 
     bool InitializeSDL();
-    void LoadMedia();
 
     void Input();
     bool IsKeyDown(int);
@@ -41,16 +49,10 @@ private:
     void Draw();
     void Cleanup();
 
-    // Game loop exit flag.
-    bool _quit;
-
     // Map for storing keyboard input
     std::map<int, bool> _keyDown;
 
     SDL_Window* _window;
-    SDL_Renderer* _renderer;
-
-    SplashScreen* _splashScreen;
 };
 
 #endif
