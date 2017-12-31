@@ -5,10 +5,12 @@
 
 #include "Button.h"
 
-Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, std::function<void()> const& event, bool menuButton) : GameObject(x, y, width, height, layer, renderer, "Button")
+Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, std::string path, std::function<void()> const& event, bool menuButton) : GameObject(x, y, width, height, layer, renderer, "Button")
 {
-    _buttonWidth = width;
-    _buttonHeight = height;
+    _texture->LoadTexture(path);
+
+    _buttonWidth = _texture->_width;
+    _buttonHeight = _texture->_height;
 
     _menuButton = menuButton;
 
@@ -24,9 +26,6 @@ Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint
 
 Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string text, std::function<void()> const& event, bool menuButton) : GameObject(x, y, width, height, layer, renderer, "Button + Text")
 {
-    _buttonWidth = width;
-    _buttonHeight = height;
-
     _menuButton = menuButton;
 
     _x = x;
@@ -48,6 +47,9 @@ Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint
         _texture->LoadRenderedText(text, colour);
     }
 
+    _buttonWidth = _texture->_width;
+    _buttonHeight = _texture->_height;
+
     return;
 }
 
@@ -64,61 +66,64 @@ void Button::Update()
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
 
-    // Check mouse pos with button boundaries.
-    if(mouseX < _x)
+    if(_show)
     {
-        inside = false;
-    }
-
-    else if(mouseX > _x + _buttonWidth)
-    {
-        inside = false;
-    }
-
-    else if(mouseY < _y)
-    {
-        inside = false;
-    }
-
-    else if(mouseY > _y + _buttonHeight)
-    {
-        inside = false;
-    }
-
-    if(!inside)
-    {
-        _down = false;
-        _texture->SetColor(255, 255, 255);
-    }
-
-    else
-    {
-        if(Game::_mouseInput[0]) // Mouse over.
+        // Check mouse pos with button boundaries.
+        if(mouseX < _x)
         {
-            _texture->SetColor(255, 0, 255);
+            inside = false;
         }
 
-        if(Game::_mouseInput[1]) // Mouse down.
+        else if(mouseX > _x + _buttonWidth)
         {
-            _down = true;
-            _texture->SetColor(200, 100, 200);
+            inside = false;
         }
 
-        if(Game::_mouseInput[2]) // Mouse up.
+        else if(mouseY < _y)
         {
-            if(_down)
+            inside = false;
+        }
+
+        else if(mouseY > _y + _buttonHeight)
+        {
+            inside = false;
+        }
+
+        if(!inside)
+        {
+            _down = false;
+            _texture->SetColor(255, 255, 255);
+        }
+
+        else
+        {
+            if(Game::_mouseInput[0]) // Mouse over.
             {
-                _down = false;
+                _texture->SetColor(255, 255, 0);
+            }
 
-                _texture->SetColor(255, 0, 255);
-                
-                if(_menuButton)
+            if(Game::_mouseInput[1]) // Mouse down.
+            {
+                _down = true;
+                _texture->SetColor(255, 255, 200);
+            }
+
+            if(Game::_mouseInput[2]) // Mouse up.
+            {
+                if(_down)
                 {
-                    Menu::Destroy();
-                }
+                    _down = false;
 
-                // Run buttons _event action.
-                _event();
+                    _texture->SetColor(255, 255, 0);
+                    
+                    if(_menuButton)
+                    {
+                        Menu::Destroy();
+                    }
+
+                    // Run buttons _event action.
+                    _event();
+                }
             }
         }
     }

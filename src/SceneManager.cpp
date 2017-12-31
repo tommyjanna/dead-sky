@@ -18,6 +18,7 @@ void SceneManager::ChangeScene(int scene)
 
     case SceneManager::MENU:
     {   
+        SDL_SetRenderDrawColor(Game::_renderer, 0xFF, 0xFF, 0x00, 0xFF);
         Menu m = Menu();
         break;
     }

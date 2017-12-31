@@ -35,6 +35,7 @@ public:
     TTF_Font* _font;
 
     int _opacity;
+    int _width, _height;
 
     void Render();
     
@@ -49,7 +50,6 @@ private:
     SDL_Renderer* _renderer;
 
     int _x, _y;
-    int _width, _height;
 
     std::chrono::system_clock::time_point _beginningTime;
     std::chrono::duration<double, std::milli> _elapsedTime;

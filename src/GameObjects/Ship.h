@@ -12,10 +12,13 @@
 #ifndef SHIP_H
 #define SHIP_H
 
+#include "Line.h"
 #include "Button.h"
 #include "Blank.h"
 #include "../GameObject.h"
+#include <functional>
 #include <ctime>
+#include <cmath>
 
 class Button;
 
@@ -41,12 +44,22 @@ private:
         void Update(int health, int shield);
 
         void DisplayPanel(std::string);
+        void CreateMap();
+
+        void DrawMapLines();
+        void DeleteMapLines();
+        void DeleteMapButtons();
 
     private:
+
+        int Distance(int x1, int y1, int x2, int y2);
+
         SDL_Renderer* _renderer;
         Blank* _panel;
         Blank* _panelText;
 
+        Blank* _mapPanel;
+        Blank* _locationNode;
 
         Blank* _healthDisplay;
         Blank* _shieldDisplay;
@@ -55,6 +68,16 @@ private:
         Blank* _shieldText;
 
         Button* _continueButton;
+        
+        Button* _spaceMap;
+        Button* _closeMap;
+
+        int _mapNodes[15][2];
+        int _mapPosX, _mapPosY;
+
+        std::vector<Button*> _mapButtons;
+
+        Line* _lines;
     };
 
     ShipInterface si;
