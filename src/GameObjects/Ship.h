@@ -15,12 +15,14 @@
 #include "Line.h"
 #include "Button.h"
 #include "Blank.h"
+#include "../Event.h"
 #include "../GameObject.h"
 #include <functional>
 #include <ctime>
 #include <cmath>
 
 class Button;
+class ShipInterface;
 
 class Ship : public GameObject
 {
@@ -32,14 +34,11 @@ public:
     void Draw() override;
     void Destroy() override;
 
-private:
-    int _health, _shield;
-
     class ShipInterface
     {
     public:
         ShipInterface(); // Default constructor cuz this damn compiler wants one. DONT DELETE
-        ShipInterface(SDL_Renderer* renderer);
+        ShipInterface(SDL_Renderer* renderer, Ship* parentShip);
 
         void Update(int health, int shield);
 
@@ -49,10 +48,14 @@ private:
         void DrawMapLines();
         void DeleteMapLines();
         void DeleteMapButtons();
+        int LocateShip();
+        int _location;
 
     private:
 
         int Distance(int x1, int y1, int x2, int y2);
+
+        Ship* _parentShip;
 
         SDL_Renderer* _renderer;
         Blank* _panel;
@@ -81,6 +84,10 @@ private:
     };
 
     ShipInterface si;
+
+private:
+
+    int _health, _shield;
 };
 
 #endif

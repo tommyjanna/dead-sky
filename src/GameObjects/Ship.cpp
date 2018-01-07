@@ -7,17 +7,15 @@
 
 Ship::Ship(int layer, SDL_Renderer* renderer) : GameObject(-80, 140, 600, 300, layer, renderer, "Ship")
 {
-    si = ShipInterface(renderer);
+    si = ShipInterface(renderer, this);
 
     _health = 100;
     _shield = 0;
     
     si.CreateMap();
-    si.DisplayPanel("You and your marauder crew are carrying vital information on the Janerian Empire's "
-                "mothership. Your payment from the rebel camp will be wired once you return the intel "
-                "to Earth-5. The Janerian's tagged your ship with a tracker and have a probe in pursuit!\n\n"
-                "Your shields were damaged while escaping the Janerian space station and the enemies are "
-                "hot on your trail.");
+
+    si._location = si.LocateShip();
+    Event::StartEvent(this);
 }
 
 Ship::~Ship()
@@ -47,9 +45,10 @@ Ship::ShipInterface::ShipInterface()
     _renderer = NULL;
 }
 
-Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer)
+Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer, Ship* parentShip)
 {
     _renderer = renderer;
+    _parentShip = parentShip;
 
     _panel = new Blank(_renderer, 200, 80, 640, 420, 3);
     _panel->_texture->LoadTexture("../assets/graphics/panel.png");
@@ -71,6 +70,9 @@ Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer)
 
 void Ship::ShipInterface::DisplayPanel(std::string message)
 {
+    _panel->_show = true;
+    _panelText->_show = true;
+
     SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
 
     _panelText->_texture->LoadRenderedText(message, textColour);
@@ -84,6 +86,7 @@ void Ship::ShipInterface::DisplayPanel(std::string message)
                                                         _continueButton->_show = false;
                                                         _continueButton->_toBeDestroyed = true; }, 
                                 false);
+                    
 }
 
 void Ship::ShipInterface::Update(int health, int shield)
@@ -139,35 +142,41 @@ void Ship::ShipInterface::CreateMap()
                                         _closeMap->_show = false;
                                         _locationNode->_show = false;
                                         _locationNode->_toBeDestroyed = true;
-                                        DeleteMapLines(); }, false);
+                                        DeleteMapLines();
+                                        DeleteMapButtons(); }, false);
     _closeMap->_show = false;
 
     return;
 }
 
-void Ship::ShipInterface::DrawMapLines()
+int Ship::ShipInterface::LocateShip()
 {
-    int location;
-
     for(int i = 0; i < 15; i++)
     {
         if(_mapPosX == _mapNodes[i][0])
         {
-            location = i;
+            return i;
         }
     }
 
-    for(int i = location - 3; i < location + 3; i++)
+    return 0;
+}
+
+void Ship::ShipInterface::DrawMapLines()
+{
+    _location = LocateShip();
+
+    for(int i = _location - 3; i < _location + 3; i++)
     {
-        if(i >= 0 && i != location)
+        if(i >= 0 && i != _location)
         {
-            if(Distance(_mapNodes[location][0], _mapNodes[location][1],
+            if(Distance(_mapNodes[_location][0], _mapNodes[_location][1],
                         _mapNodes[i][0], _mapNodes[i][1]) < 100)
             {
-                new Line(_renderer, _mapNodes[location][0], _mapNodes[location][1], _mapNodes[i][0], _mapNodes[i][1]);
+                new Line(_renderer, _mapNodes[_location][0] + 5, _mapNodes[_location][1] + 5, _mapNodes[i][0] + 5, _mapNodes[i][1] + 5);
 
                 Button* b = new Button(_renderer,
-                            _mapNodes[i][0], _mapNodes[i][1],
+                            _mapNodes[i][0] - 5, _mapNodes[i][1] - 5,
                             25, 25,
                             4,
                             "../assets/graphics/mapnode.png",
@@ -178,6 +187,8 @@ void Ship::ShipInterface::DrawMapLines()
                                 _closeMap->_show = false;
                                 _locationNode->_show = false;
                                 _locationNode->_toBeDestroyed = true;
+                                _location = LocateShip();
+                                Event::StartEvent(_parentShip);
                                 DeleteMapLines();
                                 DeleteMapButtons();
                             }, false);
