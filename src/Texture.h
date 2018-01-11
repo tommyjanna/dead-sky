@@ -25,6 +25,7 @@ public:
     
     Texture(int x, int y, int width, int height);
     Texture(int x, int y, int width, int height, SDL_Renderer* renderer);
+    Texture(int x, int y, int width, int height, SDL_Renderer* renderer, std::string font);
     ~Texture();
 
     void LoadTexture(std::string path);

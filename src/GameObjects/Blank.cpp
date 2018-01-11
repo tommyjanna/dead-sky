@@ -30,6 +30,26 @@ Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 
     return;
 }
 
+Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string font, std::string text) : GameObject(x, y, width, height, layer, renderer, "Blank")
+{
+
+    _texture->_font = TTF_OpenFont(font.c_str(), fontSize);
+
+    if(_texture->_font == NULL)
+    {
+        printf("Error loading fonts... Error %s\n", TTF_GetError());
+    }
+
+    else
+    {
+        SDL_Color colour = {0xFF, 0xFF, 0xFF};
+
+        _texture->LoadRenderedText(text, colour);
+    }
+
+    return;
+}
+
 Blank::~Blank()
 {
 }

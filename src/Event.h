@@ -13,7 +13,7 @@ class Ship;
 
 namespace Event
 {
-    void StartEvent(Ship* ship);
+    void UpdateEvent(Ship* ship, int panelNumber, int choice);
     void ResetLocations();
 
     static bool visited[15];

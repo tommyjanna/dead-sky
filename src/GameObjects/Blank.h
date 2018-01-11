@@ -18,6 +18,7 @@ class Blank : public GameObject
 public:
     Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer);
     Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string);
+    Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string font, std::string);
     ~Blank();
 
     void Update() override;

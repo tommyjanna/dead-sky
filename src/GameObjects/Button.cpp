@@ -53,6 +53,35 @@ Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint
     return;
 }
 
+Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string font, std::string text, std::function<void()> const& event, bool menuButton) : GameObject(x, y, width, height, layer, renderer, "Button + Text")
+{
+    _menuButton = menuButton;
+
+    _x = x;
+    _y = y;
+
+    _event = event;
+
+    _texture->_font = TTF_OpenFont(font.c_str(), fontSize);
+
+    if(_texture->_font == NULL)
+    {
+        printf("Error loading fonts... Error %s\n", TTF_GetError());
+    }
+
+    else
+    {
+        SDL_Color colour = {0xFF, 0xFF, 0xFF};
+
+        _texture->LoadRenderedText(text, colour);
+    }
+
+    _buttonWidth = _texture->_width;
+    _buttonHeight = _texture->_height;
+
+    return;
+}
+
 Button::~Button()
 {
 
@@ -99,13 +128,13 @@ void Button::Update()
         {
             if(Game::_mouseInput[0]) // Mouse over.
             {
-                _texture->SetColor(255, 255, 0);
+                _texture->SetColor(150, 255, 0);
             }
 
             if(Game::_mouseInput[1]) // Mouse down.
             {
                 _down = true;
-                _texture->SetColor(255, 255, 200);
+                _texture->SetColor(100, 255, 0);
             }
 
             if(Game::_mouseInput[2]) // Mouse up.

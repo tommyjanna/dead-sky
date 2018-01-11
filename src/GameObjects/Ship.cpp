@@ -11,11 +11,15 @@ Ship::Ship(int layer, SDL_Renderer* renderer) : GameObject(-80, 140, 600, 300, l
 
     _health = 100;
     _shield = 0;
+
+    _damage = 25;
+    _members = 3;
+    _credits = 40;
     
     si.CreateMap();
 
     si._location = si.LocateShip();
-    Event::StartEvent(this);
+    Event::UpdateEvent(this, 1, 0);
 }
 
 Ship::~Ship()
@@ -25,7 +29,7 @@ Ship::~Ship()
 
 void Ship::Update()
 {
-    si.Update(_health, _shield);
+    si.Update();
     return;
 }
 
@@ -53,15 +57,20 @@ Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer, Ship* parentShip)
     _panel = new Blank(_renderer, 200, 80, 640, 420, 3);
     _panel->_texture->LoadTexture("../assets/graphics/panel.png");
 
-    _panelText = new Blank(_renderer, 240, 120, 1, 1, 4, 16, " ");
+    _panelText = new Blank(_renderer, 240, 120, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
     _healthText = new Blank(_renderer, 51, 25, 1, 1, 4, 40, " ");
     _shieldText = new Blank(_renderer, 51, 500, 1, 1, 4, 40, " ");
+    _damageText = new Blank(_renderer, 265, 17, 1, 1, 4, 24, " ");
+    _membersText = new Blank(_renderer, 505, 17, 1, 1, 4, 24, " ");
+    _creditsText = new Blank(_renderer, 718, 17, 1, 1, 4, 24, " ");
 
     _healthDisplay = new Blank(_renderer, 0, 20, 144, 60, 3);
     _shieldDisplay = new Blank(_renderer, 0, 496, 144, 60, 3);
+    _statusBar = new Blank(_renderer, 212, 0, 600, 300, 3);
 
     _healthDisplay->_texture->LoadTexture("../assets/graphics/hp.png");
     _shieldDisplay->_texture->LoadTexture("../assets/graphics/sh.png");
+    _statusBar->_texture->LoadTexture("../assets/graphics/statusbar.png");
 
     _mapPanel = new Blank(_renderer, 200, 80, 640, 420, 3);
     _mapPanel->_texture->LoadTexture("../assets/graphics/spacemap.png");
@@ -77,10 +86,10 @@ void Ship::ShipInterface::DisplayPanel(std::string message)
 
     _panelText->_texture->LoadRenderedText(message, textColour);
     _continueButton = new Button(_renderer, 
-                                450, 400, 
+                                455, 430, 
                                 88, 37,
                                 4,
-                                18, "Continue...",
+                                18, "../assets/fonts/nasalization-rg.ttf", "Continue...",
                                 [this]() { _panel->_show = false;
                                                         _panelText->_show = false;
                                                         _continueButton->_show = false;
@@ -89,10 +98,46 @@ void Ship::ShipInterface::DisplayPanel(std::string message)
                     
 }
 
-void Ship::ShipInterface::Update(int health, int shield)
+int Ship::ShipInterface::DisplayPanel(std::string message, std::vector<std::string> answers, int panelNum)
 {
-    _healthText->_texture->LoadRenderedText(std::to_string(health), SDL_Color { 0x00, 0x00, 0x00 });
-    _shieldText->_texture->LoadRenderedText(std::to_string(shield), SDL_Color { 0x00, 0x00, 0x00 });
+    _panel->_show = true;
+    _panelText->_show = true;
+
+    SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
+
+    _panelText->_texture->LoadRenderedText(message, textColour);
+
+    for(int i = 0; i < answers.size(); i++)
+    {
+        Button* b = new Button(_renderer,
+                                240, 350 + (25 * i),
+                                200, 37,
+                                4,
+                                18, "../assets/fonts/nasalization-rg.ttf", answers[i],
+                                [this, panelNum, i]() {
+                                    _panel->_show = false;
+                                    _panelText->_show = false;
+                                    _continueButton->_show = false;
+                                    _continueButton->_toBeDestroyed = true;
+                                    DeleteButtons(_answers);
+                                    SDL_Delay(200); // Short delay to avoid accidental double click.
+                                    Event::UpdateEvent(_parentShip, panelNum, i);
+                                },
+                                false);
+        
+        _answers.push_back(b);
+    }
+
+    return 0;
+}
+
+void Ship::ShipInterface::Update()
+{
+    _healthText->_texture->LoadRenderedText(std::to_string(_parentShip->_health), SDL_Color { 0x00, 0x00, 0x00 });
+    _shieldText->_texture->LoadRenderedText(std::to_string(_parentShip->_shield), SDL_Color { 0x00, 0x00, 0x00 });
+    _damageText->_texture->LoadRenderedText(std::to_string(_parentShip->_damage), SDL_Color { 0xFF, 0xFF, 0xFF });
+    _membersText->_texture->LoadRenderedText(std::to_string(_parentShip->_members), SDL_Color { 0xFF, 0xFF, 0xFF });
+    _creditsText->_texture->LoadRenderedText(std::to_string(_parentShip->_credits), SDL_Color { 0xFF, 0xFF, 0xFF });
 
     return;
 }
@@ -143,7 +188,7 @@ void Ship::ShipInterface::CreateMap()
                                         _locationNode->_show = false;
                                         _locationNode->_toBeDestroyed = true;
                                         DeleteMapLines();
-                                        DeleteMapButtons(); }, false);
+                                        DeleteButtons(_mapButtons); }, false);
     _closeMap->_show = false;
 
     return;
@@ -188,9 +233,9 @@ void Ship::ShipInterface::DrawMapLines()
                                 _locationNode->_show = false;
                                 _locationNode->_toBeDestroyed = true;
                                 _location = LocateShip();
-                                Event::StartEvent(_parentShip);
+                                Event::UpdateEvent(_parentShip, 1, 0);
                                 DeleteMapLines();
-                                DeleteMapButtons();
+                                DeleteButtons(_mapButtons);
                             }, false);
                 _mapButtons.push_back(b);
             }
@@ -211,11 +256,11 @@ void Ship::ShipInterface::DeleteMapLines()
     }
 }
 
-void Ship::ShipInterface::DeleteMapButtons()
+void Ship::ShipInterface::DeleteButtons(std::vector<Button*> buttonVector)
 {
-    for(int i = 0; i < _mapButtons.size(); i++)
+    for(int i = 0; i < buttonVector.size(); i++)
     {
-        if(_mapButtons[i] != NULL)
-            _mapButtons[i]->_toBeDestroyed = true;
+        if(buttonVector[i] != NULL)
+            buttonVector[i]->_toBeDestroyed = true;
     }
 }

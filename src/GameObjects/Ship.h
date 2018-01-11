@@ -40,14 +40,16 @@ public:
         ShipInterface(); // Default constructor cuz this damn compiler wants one. DONT DELETE
         ShipInterface(SDL_Renderer* renderer, Ship* parentShip);
 
-        void Update(int health, int shield);
+        void Update();
 
-        void DisplayPanel(std::string);
+        void DisplayPanel(std::string text); // Single text panel.
+        int DisplayPanel(std::string text, std::vector<std::string> answers, int panelNum); // A panel with multiple answers.
         void CreateMap();
 
         void DrawMapLines();
         void DeleteMapLines();
-        void DeleteMapButtons();
+        void DeleteButtons(std::vector<Button*> buttonVector);
+
         int LocateShip();
         int _location;
 
@@ -66,9 +68,13 @@ public:
 
         Blank* _healthDisplay;
         Blank* _shieldDisplay;
+        Blank* _statusBar;
 
         Blank* _healthText;
         Blank* _shieldText;
+        Blank* _damageText;
+        Blank* _membersText;
+        Blank* _creditsText;
 
         Button* _continueButton;
         
@@ -79,15 +85,17 @@ public:
         int _mapPosX, _mapPosY;
 
         std::vector<Button*> _mapButtons;
+        std::vector<Button*> _answers;
 
         Line* _lines;
     };
 
     ShipInterface si;
 
-private:
-
     int _health, _shield;
+    int _credits, _damage, _members;
+
+private:
 };
 
 #endif
