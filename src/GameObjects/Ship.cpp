@@ -120,7 +120,7 @@ int Ship::ShipInterface::DisplayPanel(std::string message, std::vector<std::stri
                                     _continueButton->_show = false;
                                     _continueButton->_toBeDestroyed = true;
                                     DeleteButtons(_answers);
-                                    SDL_Delay(200); // Short delay to avoid accidental double click.
+                                    SDL_Delay(300); // Short delay to avoid accidental double click.
                                     Event::UpdateEvent(_parentShip, panelNum, i);
                                 },
                                 false);

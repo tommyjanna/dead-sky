@@ -50,7 +50,7 @@ namespace Event
 
                         ship->si.DisplayPanel("You fly cautiously toward the planet where the signal originates.\n\n"
                                         "As the captain, you and another crew member, Cornelius, go down to the planet. "
-                                        "On the planet you encounter a small village with muddy humans living "
+                                        "On the planet you encounter a small village with humanoid dolphins living "
                                         "in huts built with metal debris.\n\nTheir leader informs you of the destruction "
                                         "of their city while Cornelius, wanders off into "
                                         "the desolate planet.\n\nDuring your conversation with the leader, you hear "
@@ -98,6 +98,10 @@ namespace Event
                                     "(Redeemable at any participating Galacic Trade Market)");
                 
                 ship->_credits += 50;
+                break;
+            
+            case 3:
+                
             }
         }
 
