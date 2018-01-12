@@ -8,6 +8,7 @@
 #define EVENT_H
 
 #include "GameObjects/Ship.h"
+#include "GameObjects/Enemy.h"
 
 class Ship;
 

@@ -101,7 +101,10 @@ namespace Event
                 break;
             
             case 3:
-                
+                Enemy* enemy = new Enemy(2, Game::_renderer);
+                enemy->_texture->LoadTexture("../assets/graphics/enemyship.png");
+
+                ship->si.CombatPanel();
             }
         }
 

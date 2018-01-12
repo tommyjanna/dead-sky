@@ -5,6 +5,11 @@
 
 #include "Button.h"
 
+// Declare static members.
+std::chrono::system_clock::time_point Button::_beginningTime;
+std::chrono::duration<double, std::milli> Button::_elapsedTime;
+bool Button::_timerRunning;
+
 Button::Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, std::string path, std::function<void()> const& event, bool menuButton) : GameObject(x, y, width, height, layer, renderer, "Button")
 {
     _texture->LoadTexture(path);
@@ -90,12 +95,22 @@ Button::~Button()
 void Button::Update()
 {
     bool inside = true; // Innocent until proven guilty :)
+    bool timeCheck = true;
 
     // Get mouse pos.
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
 
-    if(_show)
+    if(_timerRunning)
+    {
+        _elapsedTime = std::chrono::system_clock::now() - _beginningTime;
+        if(_elapsedTime.count() < 200)
+        {
+            timeCheck = false;
+        }
+    }
+
+    if(_show && timeCheck)
     {
         // Check mouse pos with button boundaries.
         if(mouseX < _x)
@@ -141,6 +156,10 @@ void Button::Update()
             {
                 if(_down)
                 {
+                    // Start timer between button presses.
+                    _beginningTime = std::chrono::system_clock::now();
+                    _timerRunning = true;
+
                     _down = false;
 
                     _texture->SetColor(255, 255, 0);

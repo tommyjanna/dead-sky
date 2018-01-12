@@ -81,6 +81,7 @@ void Ship::ShipInterface::DisplayPanel(std::string message)
 {
     _panel->_show = true;
     _panelText->_show = true;
+    _spaceMap->_show = false;
 
     SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
 
@@ -93,6 +94,7 @@ void Ship::ShipInterface::DisplayPanel(std::string message)
                                 [this]() { _panel->_show = false;
                                                         _panelText->_show = false;
                                                         _continueButton->_show = false;
+                                                        _spaceMap->_show = true;
                                                         _continueButton->_toBeDestroyed = true; }, 
                                 false);
                     
@@ -102,6 +104,7 @@ int Ship::ShipInterface::DisplayPanel(std::string message, std::vector<std::stri
 {
     _panel->_show = true;
     _panelText->_show = true;
+    _spaceMap->_show = false;
 
     SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
 
@@ -115,12 +118,10 @@ int Ship::ShipInterface::DisplayPanel(std::string message, std::vector<std::stri
                                 4,
                                 18, "../assets/fonts/nasalization-rg.ttf", answers[i],
                                 [this, panelNum, i]() {
+                                    DeleteButtons(_answers);
                                     _panel->_show = false;
                                     _panelText->_show = false;
-                                    _continueButton->_show = false;
-                                    _continueButton->_toBeDestroyed = true;
-                                    DeleteButtons(_answers);
-                                    SDL_Delay(300); // Short delay to avoid accidental double click.
+                                    _spaceMap->_show = true;
                                     Event::UpdateEvent(_parentShip, panelNum, i);
                                 },
                                 false);
@@ -263,4 +264,11 @@ void Ship::ShipInterface::DeleteButtons(std::vector<Button*> buttonVector)
         if(buttonVector[i] != NULL)
             buttonVector[i]->_toBeDestroyed = true;
     }
+}
+
+void Ship::ShipInterface::CombatPanel()
+{
+    _spaceMap->_show = false;
+
+
 }

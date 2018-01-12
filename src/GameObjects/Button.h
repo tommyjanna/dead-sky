@@ -29,6 +29,10 @@ private:
 
     int _buttonWidth, _buttonHeight;
     int _x, _y;
+    
+    static std::chrono::system_clock::time_point _beginningTime;
+    static std::chrono::duration<double, std::milli> _elapsedTime;
+    static bool _timerRunning;
 
     bool _down;
     bool _menuButton;

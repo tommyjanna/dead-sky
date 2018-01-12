@@ -44,6 +44,7 @@ public:
 
         void DisplayPanel(std::string text); // Single text panel.
         int DisplayPanel(std::string text, std::vector<std::string> answers, int panelNum); // A panel with multiple answers.
+        void CombatPanel();
         void CreateMap();
 
         void DrawMapLines();
