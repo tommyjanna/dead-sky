@@ -64,11 +64,11 @@ Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer, Ship* parentShip)
     _membersText = new Blank(_renderer, 505, 17, 1, 1, 4, 24, " ");
     _creditsText = new Blank(_renderer, 718, 17, 1, 1, 4, 24, " ");
 
-    _combatPanel = new Blank(_renderer, 340, 70, 420, 420, 3);
+    _combatPanel = new Blank(_renderer, 300, 70, 420, 420, 3);
     _combatPanel->_texture->LoadTexture("../assets/graphics/combatpanel.png");
     _combatPanel->_show = false;
 
-    _energyText = new Blank(_renderer, 380, 120, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
+    _energyText = new Blank(_renderer, 340, 120, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
     _blasterPoints = new Blank(_renderer, 500, 200, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
     _shieldPenPoints = new Blank(_renderer, 500, 220, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
     _shieldPoints = new Blank(_renderer, 500, 240, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
