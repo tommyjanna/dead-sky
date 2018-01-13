@@ -68,11 +68,6 @@ Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer, Ship* parentShip)
     _combatPanel->_texture->LoadTexture("../assets/graphics/combatpanel.png");
     _combatPanel->_show = false;
 
-    _energyText = new Blank(_renderer, 340, 120, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
-    _blasterPoints = new Blank(_renderer, 500, 200, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
-    _shieldPenPoints = new Blank(_renderer, 500, 220, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
-    _shieldPoints = new Blank(_renderer, 500, 240, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
-
     _healthDisplay = new Blank(_renderer, 0, 20, 144, 60, 3);
     _shieldDisplay = new Blank(_renderer, 0, 496, 144, 60, 3);
     _statusBar = new Blank(_renderer, 212, 0, 600, 300, 3);
@@ -277,6 +272,19 @@ void Ship::ShipInterface::DeleteButtons(std::vector<Button*> buttonVector)
 
 void Ship::ShipInterface::CombatPanel()
 {
+    _parentShip->_blasterPts = 0;
+    _parentShip->_shieldPenPts = 0;
+    _parentShip->_shieldPts = 0;
+
+    _energyText = new Blank(_renderer, 340, 120, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
+    _blasterPoints = new Blank(_renderer, 505, 231, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
+    _shieldPenPoints = new Blank(_renderer, 505, 304, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
+    _shieldPoints = new Blank(_renderer, 505, 379, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
+
+    Blank* _blasterWord = new Blank(_renderer, 478, 200, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Blasters");
+    Blank* _shieldPenWord = new Blank(_renderer, 405, 273, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Shield Penetrating Missiles");
+    Blank* _shieldWord = new Blank(_renderer, 462, 348, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Shield Regen");
+
     _spaceMap->_show = false;
     _combatPanel->_show = true;
     
@@ -284,8 +292,123 @@ void Ship::ShipInterface::CombatPanel()
 
     _energyText->_texture->LoadRenderedText("You have " + std::to_string(_parentShip->_energy) + " energy points to spend.");
 
-    for(int i = 0; i < 3; i++)
-    {
+    // Must initilize each member outside of a loob because otherwise lambda will not work?
+    // Yes, this is a terrible solution, but I don't have time right now man.
+    // If you find yourself here, don't mark the following code. Close your eyes.
+    Button* minus1 = new Button(_renderer, 380, 228, 32, 32, 4, "../assets/graphics/minus.png",
+                            [this]() { ModPoints(_combatButtons[0]); }, false);
 
+    Button* plus1 = new Button(_renderer, 630, 228, 32, 32, 4, "../assets/graphics/plus.png",
+                            [this]() { ModPoints(_combatButtons[1]); }, false);
+
+    Button* minus2 = new Button(_renderer, 380, 301, 32, 32, 4, "../assets/graphics/minus.png",
+                            [this]() { ModPoints(_combatButtons[2]); }, false);
+
+    Button* plus2 = new Button(_renderer, 630, 301, 32, 32, 4, "../assets/graphics/plus.png",
+                            [this]() { ModPoints(_combatButtons[3]); }, false);
+
+    Button* minus3 = new Button(_renderer, 380, 375, 32, 32, 4, "../assets/graphics/minus.png",
+                            [this]() { ModPoints(_combatButtons[4]); }, false);
+
+    Button* plus3 = new Button(_renderer, 630, 375, 32, 32, 4, "../assets/graphics/plus.png",
+                            [this]() { ModPoints(_combatButtons[5]); }, false);
+
+    _combatButtons.push_back(minus1);
+    _combatButtons.push_back(plus1);
+    _combatButtons.push_back(minus2);
+    _combatButtons.push_back(plus2);
+    _combatButtons.push_back(minus3);
+    _combatButtons.push_back(plus3);
+    // Ok, the bad code is over, open your eyes.
+
+    _fire = new Button(_renderer, 
+                        490, 430, 
+                        88, 37,
+                        4,
+                        18, "../assets/fonts/nasalization-rg.ttf", "FIRE!",
+                        [this, _blasterWord, _shieldPenWord, _shieldWord]() { _energyText->_toBeDestroyed = true;
+                                    _combatPanel->_show = false;
+                                    _blasterPoints->_toBeDestroyed = true;
+                                    _shieldPenPoints->_toBeDestroyed = true;
+                                    _shieldPoints->_toBeDestroyed = true;
+                                    _fire->_toBeDestroyed = true;
+                                    _blasterWord->_toBeDestroyed = true;
+                                    _shieldPenWord->_toBeDestroyed = true;
+                                    _shieldWord->_toBeDestroyed = true;
+
+                                    DeleteButtons(_combatButtons); }, 
+                        false);
+}
+
+void Ship::ShipInterface::ModPoints(Button* b)
+{
+    int buttonId;
+
+    for(int i = 0; i < 6; i++)
+    {
+        if(b == _combatButtons[i])
+        {
+            buttonId = i;
+        }
     }
+
+    switch(buttonId)
+    {
+    case 0: // Minus blasters
+        if(_parentShip->_blasterPts > 0)
+        {
+            _parentShip->_blasterPts--;
+            _parentShip->_energy++;
+
+            _blasterPoints->_texture->LoadRenderedText(std::to_string(_parentShip->_blasterPts));
+        }
+        break;
+    case 1: // Plus blasters
+        if(_parentShip->_energy > 0)
+        {
+            _parentShip->_blasterPts++;
+            _parentShip->_energy--;
+
+            _blasterPoints->_texture->LoadRenderedText(std::to_string(_parentShip->_blasterPts));
+        }
+        break;
+    case 2: // Minus shield pen
+        if(_parentShip->_shieldPenPts > 0)
+        {
+            _parentShip->_shieldPenPts--;
+            _parentShip->_energy++;
+
+            _shieldPenPoints->_texture->LoadRenderedText(std::to_string(_parentShip->_shieldPenPts));
+        }
+        break;
+    case 3: // Plus shield pen
+        if(_parentShip->_energy > 0)
+        {
+            _parentShip->_shieldPenPts++;
+            _parentShip->_energy--;
+
+            _shieldPenPoints->_texture->LoadRenderedText(std::to_string(_parentShip->_shieldPenPts));
+        }
+        break;
+    case 4: // Minus shield
+        if(_parentShip->_shieldPts > 0)
+        {
+            _parentShip->_shieldPts--;
+            _parentShip->_energy++;
+
+            _shieldPoints->_texture->LoadRenderedText(std::to_string(_parentShip->_shieldPts));
+        }
+        break;
+    case 5: // Plus shield
+        if(_parentShip->_energy > 0)
+        {
+            _parentShip->_shieldPts++;
+            _parentShip->_energy--;
+            
+            _shieldPoints->_texture->LoadRenderedText(std::to_string(_parentShip->_shieldPts));
+        }
+        break;
+    }
+
+    _energyText->_texture->LoadRenderedText("You have " + std::to_string(_parentShip->_energy) + " energy points to spend.");
 }

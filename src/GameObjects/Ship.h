@@ -34,6 +34,10 @@ public:
     void Draw() override;
     void Destroy() override;
 
+    int _shieldPenPts;
+    int _blasterPts;
+    int _shieldPts;
+
     class ShipInterface
     {
     public:
@@ -57,6 +61,7 @@ public:
     private:
 
         int Distance(int x1, int y1, int x2, int y2);
+        void ModPoints(Button* b);
 
         Ship* _parentShip;
 
@@ -70,6 +75,7 @@ public:
         Blank* _shieldPenPoints;
         Blank* _shieldPoints;
 
+        Button* _fire;
 
         Blank* _mapPanel;
         Blank* _locationNode;
@@ -94,6 +100,7 @@ public:
 
         std::vector<Button*> _mapButtons;
         std::vector<Button*> _answers;
+        std::vector<Button*> _combatButtons;
 
         Line* _lines;
     };
