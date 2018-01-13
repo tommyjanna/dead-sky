@@ -11,6 +11,7 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
+#include "Blank.h"
 #include "../GameObject.h"
 
 class Enemy : public GameObject
@@ -25,6 +26,12 @@ public:
 
 private:
     int _health, _shield;
+
+    Blank* _healthDisplay;
+    Blank* _shieldDisplay;
+
+    Blank* _healthText;
+    Blank* _shieldText;
 };
 
 #endif

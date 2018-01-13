@@ -64,6 +64,15 @@ Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer, Ship* parentShip)
     _membersText = new Blank(_renderer, 505, 17, 1, 1, 4, 24, " ");
     _creditsText = new Blank(_renderer, 718, 17, 1, 1, 4, 24, " ");
 
+    _combatPanel = new Blank(_renderer, 340, 70, 420, 420, 3);
+    _combatPanel->_texture->LoadTexture("../assets/graphics/combatpanel.png");
+    _combatPanel->_show = false;
+
+    _energyText = new Blank(_renderer, 380, 120, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
+    _blasterPoints = new Blank(_renderer, 500, 200, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
+    _shieldPenPoints = new Blank(_renderer, 500, 220, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
+    _shieldPoints = new Blank(_renderer, 500, 240, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
+
     _healthDisplay = new Blank(_renderer, 0, 20, 144, 60, 3);
     _shieldDisplay = new Blank(_renderer, 0, 496, 144, 60, 3);
     _statusBar = new Blank(_renderer, 212, 0, 600, 300, 3);
@@ -269,6 +278,14 @@ void Ship::ShipInterface::DeleteButtons(std::vector<Button*> buttonVector)
 void Ship::ShipInterface::CombatPanel()
 {
     _spaceMap->_show = false;
+    _combatPanel->_show = true;
+    
+    _parentShip->_energy = _parentShip->_members;
 
+    _energyText->_texture->LoadRenderedText("You have " + std::to_string(_parentShip->_energy) + " energy points to spend.");
 
+    for(int i = 0; i < 3; i++)
+    {
+
+    }
 }

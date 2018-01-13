@@ -52,7 +52,7 @@ namespace Event
                                         "As the captain, you and another crew member, Cornelius, go down to the planet. "
                                         "On the planet you encounter a small village with humanoid dolphins living "
                                         "in huts built with metal debris.\n\nTheir leader informs you of the destruction "
-                                        "of their city while Cornelius, wanders off into "
+                                        "of their city while Cornelius wanders off into "
                                         "the desolate planet.\n\nDuring your conversation with the leader, you hear "
                                         "a terrified yelp from outside the hut.", answers, 3);
                     }
@@ -101,10 +101,46 @@ namespace Event
                 break;
             
             case 3:
-                Enemy* enemy = new Enemy(2, Game::_renderer);
-                enemy->_texture->LoadTexture("../assets/graphics/enemyship.png");
+                if(panelNumber == 1)
+                {
+                    Enemy* enemy = new Enemy(2, Game::_renderer);
+                    enemy->_texture->LoadTexture("../assets/graphics/enemyship.png");
 
-                ship->si.CombatPanel();
+                    answers.push_back(">: Loyalty tax my ass! Bite me.");
+                    answers.push_back(">: Of course, we don't want to cause any trouble. Please take our " 
+                                        + std::to_string(ship->_credits) + " credits.");
+
+                    ship->si.DisplayPanel("An incoming ship slows to a halt, and a video transmission "
+                                        "of a group of Klingons sitting around their ship's dashboard is "
+                                        "patched through to your main systems monitor. The "
+                                        "one in the front speaks first:\n\n"
+                                        "\"We are on a diplomatic mission on behalf of the Empire "
+                                        "and we ask that you forfeit all your trade credits as a loyalty tax "
+                                        "to the Emporor.\"", answers, 2);
+                }
+
+                else if(panelNumber == 2)
+                {
+                    if(choice == 0)
+                    {
+                        answers.push_back("Battle!");
+
+                        ship->si.DisplayPanel("\"Then you shall feel the full wrath of the EMPIRE!!!\"", answers, 3);
+                    }
+
+                    else if(choice == 1)
+                    {
+                        ship->si.DisplayPanel("\"Thanks for your compliance.\"\n\nYou lost "
+                                + std::to_string(ship->_credits) + "credits.");
+
+                        ship->_credits = 0;
+                    }
+                }
+
+                else if(panelNumber == 3)
+                {
+                    ship->si.CombatPanel();
+                }
             }
         }
 

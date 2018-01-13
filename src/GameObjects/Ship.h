@@ -64,6 +64,13 @@ public:
         Blank* _panel;
         Blank* _panelText;
 
+        Blank* _combatPanel;
+        Blank* _energyText;
+        Blank* _blasterPoints;
+        Blank* _shieldPenPoints;
+        Blank* _shieldPoints;
+
+
         Blank* _mapPanel;
         Blank* _locationNode;
 
@@ -94,7 +101,7 @@ public:
     ShipInterface si;
 
     int _health, _shield;
-    int _credits, _damage, _members;
+    int _credits, _damage, _members, _energy;
 
 private:
 };
