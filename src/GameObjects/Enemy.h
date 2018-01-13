@@ -13,6 +13,7 @@
 
 #include "Ship.h"
 #include "Blank.h"
+#include "../Event.h"
 #include "../GameObject.h"
 
 class Ship;
@@ -20,7 +21,7 @@ class Ship;
 class Enemy : public GameObject
 {
 public:
-    Enemy(int layer, SDL_Renderer* renderer, int health, int shield);
+    Enemy(int layer, SDL_Renderer* renderer, int health, int shield, int damage, int credits);
     ~Enemy();
 
     void Update() override;
@@ -29,7 +30,7 @@ public:
 
     void Attack(Ship*);
 
-    int _health, _shield;
+    int _health, _shield, _credits;
 
 private:
 
@@ -38,6 +39,8 @@ private:
 
     Blank* _healthText;
     Blank* _shieldText;
+
+    int _damage;
 };
 
 #endif

@@ -23,11 +23,6 @@ void SceneManager::ChangeScene(int scene)
         break;
     }
 
-    case SceneManager::SETUP:
-    {
-        break;
-    }
-
     case SceneManager::GAME:
     {
         Ship* ship = new Ship(2, Game::_renderer);

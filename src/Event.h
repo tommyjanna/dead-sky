@@ -9,6 +9,7 @@
 
 #include "GameObjects/Ship.h"
 #include "GameObjects/Enemy.h"
+#include "SceneManager.h"
 
 class Ship;
 class Enemy;
@@ -17,8 +18,10 @@ namespace Event
 {
     void UpdateEvent(Ship* ship, int panelNumber, int choice);
     void ResetLocations();
+    void DestroyEnemy();
 
     static bool visited[15];
+    static bool destroyEnemy;
 
     static Enemy* currentEnemy;
 };

@@ -103,7 +103,7 @@ namespace Event
             case 3:
                 if(panelNumber == 1)
                 {
-                    currentEnemy = new Enemy(2, Game::_renderer, 40, 20);
+                    currentEnemy = new Enemy(2, Game::_renderer, 40, 20, 10, 30);
                     currentEnemy->_texture->LoadTexture("../assets/graphics/enemyship.png");
 
                     answers.push_back(">: Loyalty tax my ass! Bite me.");
@@ -144,8 +144,24 @@ namespace Event
             }
         }
 
+        if(panelNumber == 69) // Lost game.
+        {
+            SceneManager::ChangeScene(SceneManager::EXIT);
+        }
+
+        if(destroyEnemy)
+        {
+            destroyEnemy = false;
+            currentEnemy->_toBeDestroyed = true;
+        }
+
         // Flag visited current location so when the ship returns, the same event won't run.
         visited[ship->si._location] = true;
+    }
+
+    void DestroyEnemy()
+    {
+        destroyEnemy = true;
     }
 
     void ResetLocations()

@@ -24,15 +24,11 @@ public:
     {
         SPLASHSCREEN,
         MENU,
-        SETUP,
         GAME,
         EXIT
     };
 
     static void ChangeScene(int scene);
-
-private:
-    static Menu* _menu;
 };
 
 #endif

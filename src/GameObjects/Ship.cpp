@@ -9,8 +9,6 @@ Ship::Ship(int layer, SDL_Renderer* renderer) : GameObject(-80, 140, 600, 300, l
 {
     si = ShipInterface(renderer, this);
 
-    answers.push_back(">: Enemy Turn...");
-
     _health = 100;
     _shield = 0;
 
@@ -43,6 +41,7 @@ void Ship::Draw()
 
 void Ship::Destroy()
 {
+    si.Destroy();
     return;
 }
 
@@ -55,7 +54,7 @@ void Ship::Attack(Enemy* enemy)
     int spilloverDamage;
 
     // String for storing history of attacks
-    std::string battleLog;
+    std::string battleLog = "Your turn:\n";
 
     if(shieldDamage > 0)
     {
@@ -110,6 +109,7 @@ void Ship::Attack(Enemy* enemy)
                 spilloverDamage = damage - enemy->_shield;
 
                 enemy->_shield = 0;
+                
                 enemy->_health -= spilloverDamage;
             }
 
@@ -121,7 +121,15 @@ void Ship::Attack(Enemy* enemy)
 
         else
         {
-            enemy->_health -= damage;
+            if(enemy->_health < damage)
+            {
+                enemy->_health = 0;
+            }
+
+            else
+            {
+                enemy->_health -= damage;
+            }
 
             battleLog.append("You dealt " + std::to_string(damage) + " damage with your regular blasters!\n\n");
         }
@@ -134,9 +142,7 @@ void Ship::Attack(Enemy* enemy)
         battleLog.append("You recovered " + std::to_string(shieldRegen) + " shield points!\n\n");
     }
 
-    si.DisplayPanel(battleLog, answers, -1);
-
-    enemy->Attack(this);
+    si.BattleLog(battleLog, false, this, enemy);
 
     return;
 }
@@ -164,6 +170,8 @@ Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer, Ship* parentShip)
     _combatPanel = new Blank(_renderer, 300, 70, 420, 420, 3);
     _combatPanel->_texture->LoadTexture("../assets/graphics/combatpanel.png");
     _combatPanel->_show = false;
+
+    _loseOptions.push_back("Exit Game.");
 
     _healthDisplay = new Blank(_renderer, 0, 20, 144, 60, 3);
     _shieldDisplay = new Blank(_renderer, 0, 496, 144, 60, 3);
@@ -240,6 +248,47 @@ void Ship::ShipInterface::Update()
     _damageText->_texture->LoadRenderedText(std::to_string(_parentShip->_damage), SDL_Color { 0xFF, 0xFF, 0xFF });
     _membersText->_texture->LoadRenderedText(std::to_string(_parentShip->_members), SDL_Color { 0xFF, 0xFF, 0xFF });
     _creditsText->_texture->LoadRenderedText(std::to_string(_parentShip->_credits), SDL_Color { 0xFF, 0xFF, 0xFF });
+
+    return;
+}
+
+void Ship::ShipInterface::Destroy()
+{
+    _parentShip->_toBeDestroyed = true;
+    _panel->_toBeDestroyed = true;
+    _panelText->_toBeDestroyed = true;
+
+    _combatPanel->_toBeDestroyed = true;
+    _energyText->_toBeDestroyed = true;
+    _blasterPoints->_toBeDestroyed = true;
+    _shieldPenPoints->_toBeDestroyed = true;
+    _shieldPoints->_toBeDestroyed = true;
+
+    _fire->_toBeDestroyed = true;
+
+    _mapPanel->_toBeDestroyed = true;
+    _locationNode->_toBeDestroyed = true;
+
+    _healthDisplay->_toBeDestroyed = true;
+    _shieldDisplay->_toBeDestroyed = true;
+    _statusBar->_toBeDestroyed = true;
+
+    _healthText->_toBeDestroyed = true;
+    _shieldText->_toBeDestroyed = true;
+    _damageText->_toBeDestroyed = true;
+    _membersText->_toBeDestroyed = true;
+    _creditsText->_toBeDestroyed = true;
+
+    _continueButton->_toBeDestroyed = true;
+    
+    _spaceMap->_toBeDestroyed = true;
+    _closeMap->_toBeDestroyed = true;
+
+    DeleteButtons(_mapButtons);
+    DeleteButtons(_answers);
+    DeleteButtons(_combatButtons);
+
+    _lines->_toBeDestroyed = true;
 
     return;
 }
@@ -373,68 +422,77 @@ void Ship::ShipInterface::CombatPanel(Enemy* enemy)
     _parentShip->_shieldPenPts = 0;
     _parentShip->_shieldPts = 0;
 
-    _energyText = new Blank(_renderer, 340, 120, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
-    _blasterPoints = new Blank(_renderer, 505, 231, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
-    _shieldPenPoints = new Blank(_renderer, 505, 304, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
-    _shieldPoints = new Blank(_renderer, 505, 379, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
+    if(_parentShip->_health <= 0)
+    {
+        _parentShip->_health = 0;
+        DisplayPanel("You have been defeated. All hope for the Galaxy has been lost.", _loseOptions, 69);
+    }
 
-    Blank* _blasterWord = new Blank(_renderer, 478, 200, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Blasters");
-    Blank* _shieldPenWord = new Blank(_renderer, 405, 273, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Shield Penetrating Missiles");
-    Blank* _shieldWord = new Blank(_renderer, 462, 348, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Shield Regen");
+    else
+    {
+        _energyText = new Blank(_renderer, 340, 120, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", " ");
+        _blasterPoints = new Blank(_renderer, 505, 231, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
+        _shieldPenPoints = new Blank(_renderer, 505, 304, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
+        _shieldPoints = new Blank(_renderer, 505, 379, 1, 1, 4, 20, "../assets/fonts/nasalization-rg.ttf", "0");
 
-    _spaceMap->_show = false;
-    _combatPanel->_show = true;
-    
-    _parentShip->_energy = _parentShip->_members;
+        Blank* _blasterWord = new Blank(_renderer, 478, 200, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Blasters");
+        Blank* _shieldPenWord = new Blank(_renderer, 405, 273, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Shield Penetrating Missiles");
+        Blank* _shieldWord = new Blank(_renderer, 462, 348, 1, 1, 4, 16, "../assets/fonts/nasalization-rg.ttf", "Shield Regen");
 
-    _energyText->_texture->LoadRenderedText("You have " + std::to_string(_parentShip->_energy) + " energy points to spend.");
+        _spaceMap->_show = false;
+        _combatPanel->_show = true;
 
-    // Must initilize each member outside of a loob because otherwise lambda will not work?
-    // Yes, this is a terrible solution, but I don't have time right now man.
-    // If you find yourself here, don't mark the following code. Close your eyes.
-    Button* minus1 = new Button(_renderer, 380, 228, 32, 32, 4, "../assets/graphics/minus.png",
-                            [this]() { ModPoints(_combatButtons[0]); }, false);
+        _parentShip->_energy = _parentShip->_members;
 
-    Button* plus1 = new Button(_renderer, 630, 228, 32, 32, 4, "../assets/graphics/plus.png",
-                            [this]() { ModPoints(_combatButtons[1]); }, false);
+        _energyText->_texture->LoadRenderedText("You have " + std::to_string(_parentShip->_energy) + " energy points to spend.");
 
-    Button* minus2 = new Button(_renderer, 380, 301, 32, 32, 4, "../assets/graphics/minus.png",
-                            [this]() { ModPoints(_combatButtons[2]); }, false);
+        // Must initilize each member outside of a loob because otherwise lambda will not work?
+        // Yes, this is a terrible solution, but I don't have time right now man.
+        // If you find yourself here, don't mark the following code. Close your eyes.
+        Button* minus1 = new Button(_renderer, 380, 228, 32, 32, 4, "../assets/graphics/minus.png",
+                                [this]() { ModPoints(_combatButtons[0]); }, false);
 
-    Button* plus2 = new Button(_renderer, 630, 301, 32, 32, 4, "../assets/graphics/plus.png",
-                            [this]() { ModPoints(_combatButtons[3]); }, false);
+        Button* plus1 = new Button(_renderer, 630, 228, 32, 32, 4, "../assets/graphics/plus.png",
+                                [this]() { ModPoints(_combatButtons[1]); }, false);
 
-    Button* minus3 = new Button(_renderer, 380, 375, 32, 32, 4, "../assets/graphics/minus.png",
-                            [this]() { ModPoints(_combatButtons[4]); }, false);
+        Button* minus2 = new Button(_renderer, 380, 301, 32, 32, 4, "../assets/graphics/minus.png",
+                                [this]() { ModPoints(_combatButtons[2]); }, false);
 
-    Button* plus3 = new Button(_renderer, 630, 375, 32, 32, 4, "../assets/graphics/plus.png",
-                            [this]() { ModPoints(_combatButtons[5]); }, false);
+        Button* plus2 = new Button(_renderer, 630, 301, 32, 32, 4, "../assets/graphics/plus.png",
+                                [this]() { ModPoints(_combatButtons[3]); }, false);
 
-    _combatButtons.push_back(minus1);
-    _combatButtons.push_back(plus1);
-    _combatButtons.push_back(minus2);
-    _combatButtons.push_back(plus2);
-    _combatButtons.push_back(minus3);
-    _combatButtons.push_back(plus3);
-    // Ok, the bad code is over, open your eyes.
+        Button* minus3 = new Button(_renderer, 380, 375, 32, 32, 4, "../assets/graphics/minus.png",
+                                [this]() { ModPoints(_combatButtons[4]); }, false);
 
-    _fire = new Button(_renderer, 
-                        490, 430, 
-                        88, 37,
-                        4,
-                        18, "../assets/fonts/nasalization-rg.ttf", "FIRE!",
-                        [this, enemy, _blasterWord, _shieldPenWord, _shieldWord]() { _energyText->_toBeDestroyed = true;
-                                    _combatPanel->_show = false;
-                                    _blasterPoints->_toBeDestroyed = true;
-                                    _shieldPenPoints->_toBeDestroyed = true;
-                                    _shieldPoints->_toBeDestroyed = true;
-                                    _fire->_toBeDestroyed = true;
-                                    _blasterWord->_toBeDestroyed = true;
-                                    _shieldPenWord->_toBeDestroyed = true;
-                                    _shieldWord->_toBeDestroyed = true;
-                                    DeleteButtons(_combatButtons);
-                                    _parentShip->Attack(enemy); }, 
-                        false);
+        Button* plus3 = new Button(_renderer, 630, 375, 32, 32, 4, "../assets/graphics/plus.png",
+                                [this]() { ModPoints(_combatButtons[5]); }, false);
+
+        _combatButtons.push_back(minus1);
+        _combatButtons.push_back(plus1);
+        _combatButtons.push_back(minus2);
+        _combatButtons.push_back(plus2);
+        _combatButtons.push_back(minus3);
+        _combatButtons.push_back(plus3);
+        // Ok, the bad code is over, open your eyes.
+
+        _fire = new Button(_renderer, 
+                            490, 430, 
+                            88, 37,
+                            4,
+                            18, "../assets/fonts/nasalization-rg.ttf", "FIRE!",
+                            [this, enemy, _blasterWord, _shieldPenWord, _shieldWord]() { _energyText->_toBeDestroyed = true;
+                                        _combatPanel->_show = false;
+                                        _blasterPoints->_toBeDestroyed = true;
+                                        _shieldPenPoints->_toBeDestroyed = true;
+                                        _shieldPoints->_toBeDestroyed = true;
+                                        _fire->_toBeDestroyed = true;
+                                        _blasterWord->_toBeDestroyed = true;
+                                        _shieldPenWord->_toBeDestroyed = true;
+                                        _shieldWord->_toBeDestroyed = true;
+                                        DeleteButtons(_combatButtons);
+                                        _parentShip->Attack(enemy); }, 
+                            false);
+    }
 }
 
 void Ship::ShipInterface::ModPoints(Button* b)
@@ -508,4 +566,47 @@ void Ship::ShipInterface::ModPoints(Button* b)
     }
 
     _energyText->_texture->LoadRenderedText("You have " + std::to_string(_parentShip->_energy) + " energy points to spend.");
+}
+
+void Ship::ShipInterface::BattleLog(std::string message, bool myTurn, Ship* ship, Enemy* enemy)
+{
+    _panel->_show = true;
+    _panelText->_show = true;
+    _spaceMap->_show = false;
+
+    SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
+
+    _panelText->_texture->LoadRenderedText(message, textColour);
+
+    if(myTurn)
+    {
+        _continueButton = new Button(_renderer, 
+                                    455, 430, 
+                                    88, 37,
+                                    4,
+                                    18, "../assets/fonts/nasalization-rg.ttf", "My turn!",
+                                    [this, enemy]() { _panel->_show = false;
+                                                _panelText->_show = false;
+                                                _continueButton->_show = false;
+                                                _spaceMap->_show = true;
+                                                _continueButton->_toBeDestroyed = true;
+                                                CombatPanel(enemy); }, 
+                                    false);
+    }
+
+    else
+    {
+        _continueButton = new Button(_renderer, 
+                                    455, 430, 
+                                    88, 37,
+                                    4,
+                                    18, "../assets/fonts/nasalization-rg.ttf", "Enemy turn...",
+                                    [this, enemy]() { _panel->_show = false;
+                                                _panelText->_show = false;
+                                                _continueButton->_show = false;
+                                                _spaceMap->_show = true;
+                                                _continueButton->_toBeDestroyed = true;
+                                                enemy->Attack(_parentShip); }, 
+                                    false);
+    }        
 }

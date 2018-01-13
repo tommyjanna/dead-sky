@@ -42,8 +42,6 @@ public:
     int _blasterPts;
     int _shieldPts;
 
-    std::vector<std::string> answers;
-
     class ShipInterface
     {
     public:
@@ -51,10 +49,12 @@ public:
         ShipInterface(SDL_Renderer* renderer, Ship* parentShip);
 
         void Update();
+        void Destroy();
 
         void DisplayPanel(std::string text); // Single text panel.
         int DisplayPanel(std::string text, std::vector<std::string> answers, int panelNum); // A panel with multiple answers.
         void CombatPanel(Enemy* enemy);
+        void BattleLog(std::string message, bool myTurn, Ship* ship, Enemy* enemy);
         void CreateMap();
 
         void DrawMapLines();
@@ -107,6 +107,7 @@ public:
         std::vector<Button*> _mapButtons;
         std::vector<Button*> _answers;
         std::vector<Button*> _combatButtons;
+        std::vector<std::string> _loseOptions;
 
         Line* _lines;
     };
