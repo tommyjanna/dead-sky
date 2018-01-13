@@ -5,10 +5,10 @@
 
 #include "Enemy.h"
 
-Enemy::Enemy(int layer, SDL_Renderer* renderer) : GameObject(492, 140, 600, 300, layer, renderer, "Enemy")
+Enemy::Enemy(int layer, SDL_Renderer* renderer, int health, int shield) : GameObject(492, 140, 600, 300, layer, renderer, "Enemy")
 {
-    _health = 100;
-    _shield = 0;
+    _health = health;
+    _shield = shield;
 
     _healthText = new Blank(renderer, 885, 25, 1, 1, 4, 40, " ");
     _shieldText = new Blank(renderer, 885, 500, 1, 1, 4, 40, " ");
@@ -41,4 +41,11 @@ void Enemy::Draw()
 void Enemy::Destroy()
 {
     return;
+}
+
+void Enemy::Attack(Ship* ship)
+{
+    SDL_Delay(1000); // Add delay for dramatic effect.
+
+    
 }

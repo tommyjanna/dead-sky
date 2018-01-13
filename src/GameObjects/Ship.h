@@ -12,6 +12,7 @@
 #ifndef SHIP_H
 #define SHIP_H
 
+#include "Enemy.h"
 #include "Line.h"
 #include "Button.h"
 #include "Blank.h"
@@ -23,6 +24,7 @@
 
 class Button;
 class ShipInterface;
+class Enemy;
 
 class Ship : public GameObject
 {
@@ -33,10 +35,14 @@ public:
     void Update() override;
     void Draw() override;
     void Destroy() override;
+    
+    void Attack(Enemy*);
 
     int _shieldPenPts;
     int _blasterPts;
     int _shieldPts;
+
+    std::vector<std::string> answers;
 
     class ShipInterface
     {
@@ -48,7 +54,7 @@ public:
 
         void DisplayPanel(std::string text); // Single text panel.
         int DisplayPanel(std::string text, std::vector<std::string> answers, int panelNum); // A panel with multiple answers.
-        void CombatPanel();
+        void CombatPanel(Enemy* enemy);
         void CreateMap();
 
         void DrawMapLines();

@@ -103,8 +103,8 @@ namespace Event
             case 3:
                 if(panelNumber == 1)
                 {
-                    Enemy* enemy = new Enemy(2, Game::_renderer);
-                    enemy->_texture->LoadTexture("../assets/graphics/enemyship.png");
+                    currentEnemy = new Enemy(2, Game::_renderer, 40, 20);
+                    currentEnemy->_texture->LoadTexture("../assets/graphics/enemyship.png");
 
                     answers.push_back(">: Loyalty tax my ass! Bite me.");
                     answers.push_back(">: Of course, we don't want to cause any trouble. Please take our " 
@@ -139,7 +139,7 @@ namespace Event
 
                 else if(panelNumber == 3)
                 {
-                    ship->si.CombatPanel();
+                    ship->si.CombatPanel(currentEnemy);
                 }
             }
         }

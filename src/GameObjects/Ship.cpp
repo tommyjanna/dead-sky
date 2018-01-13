@@ -9,6 +9,8 @@ Ship::Ship(int layer, SDL_Renderer* renderer) : GameObject(-80, 140, 600, 300, l
 {
     si = ShipInterface(renderer, this);
 
+    answers.push_back(">: Enemy Turn...");
+
     _health = 100;
     _shield = 0;
 
@@ -41,6 +43,101 @@ void Ship::Draw()
 
 void Ship::Destroy()
 {
+    return;
+}
+
+void Ship::Attack(Enemy* enemy)
+{
+    int damage = _damage * _blasterPts;
+    int shieldDamage = _damage * _shieldPenPts;
+    int shieldRegen = 5 * _shieldPts;
+
+    int spilloverDamage;
+
+    // String for storing history of attacks
+    std::string battleLog;
+
+    if(shieldDamage > 0)
+    {
+        if(enemy->_shield > 0)
+        {
+            shieldDamage *= 2;
+
+            battleLog.append("You dealt " + std::to_string(shieldDamage / 2) + " damage, but it was DOUBLED to " +
+                        std::to_string(shieldDamage) + " because you hit the shield with your shield penetration missiles!\n\n");
+
+            if(enemy->_shield < shieldDamage)
+            {
+                enemy->_shield = 0;
+            }
+
+            else
+            {
+                enemy->_shield -= shieldDamage;
+            }
+        }
+
+        else
+        {
+            shieldDamage /= 2;
+            
+            battleLog.append("You dealt " + std::to_string(shieldDamage * 2) + " damage, but it was HALVED to " +
+                        std::to_string(shieldDamage) + " because you didn't hit any shield with your shield penetration missiles!\n\n");
+            
+            if(enemy->_health < shieldDamage)
+            {
+                enemy->_health = 0;
+            }
+
+            else
+            {
+                enemy->_health -= shieldDamage;
+            }
+        }
+    }
+
+    if(damage > 0)
+    {
+        if(enemy->_shield > 0)
+        {
+            damage /= 2;
+            
+            battleLog.append("You dealt " + std::to_string(damage * 2) + " damage, but it was HALVED to " +
+                            std::to_string(damage) + " because you hit the shield with your regular blasters!\n\n");
+
+            if(enemy->_shield < damage) // If damage should do more damage than the enemy's shield.
+            {
+                spilloverDamage = damage - enemy->_shield;
+
+                enemy->_shield = 0;
+                enemy->_health -= spilloverDamage;
+            }
+
+            else
+            {
+                enemy->_shield -= damage;
+            }
+        }
+
+        else
+        {
+            enemy->_health -= damage;
+
+            battleLog.append("You dealt " + std::to_string(damage) + " damage with your regular blasters!\n\n");
+        }
+    }
+
+    if(shieldRegen > 0)
+    {
+        _shield += shieldRegen;
+
+        battleLog.append("You recovered " + std::to_string(shieldRegen) + " shield points!\n\n");
+    }
+
+    si.DisplayPanel(battleLog, answers, -1);
+
+    enemy->Attack(this);
+
     return;
 }
 
@@ -270,7 +367,7 @@ void Ship::ShipInterface::DeleteButtons(std::vector<Button*> buttonVector)
     }
 }
 
-void Ship::ShipInterface::CombatPanel()
+void Ship::ShipInterface::CombatPanel(Enemy* enemy)
 {
     _parentShip->_blasterPts = 0;
     _parentShip->_shieldPenPts = 0;
@@ -326,7 +423,7 @@ void Ship::ShipInterface::CombatPanel()
                         88, 37,
                         4,
                         18, "../assets/fonts/nasalization-rg.ttf", "FIRE!",
-                        [this, _blasterWord, _shieldPenWord, _shieldWord]() { _energyText->_toBeDestroyed = true;
+                        [this, enemy, _blasterWord, _shieldPenWord, _shieldWord]() { _energyText->_toBeDestroyed = true;
                                     _combatPanel->_show = false;
                                     _blasterPoints->_toBeDestroyed = true;
                                     _shieldPenPoints->_toBeDestroyed = true;
@@ -335,8 +432,8 @@ void Ship::ShipInterface::CombatPanel()
                                     _blasterWord->_toBeDestroyed = true;
                                     _shieldPenWord->_toBeDestroyed = true;
                                     _shieldWord->_toBeDestroyed = true;
-
-                                    DeleteButtons(_combatButtons); }, 
+                                    DeleteButtons(_combatButtons);
+                                    _parentShip->Attack(enemy); }, 
                         false);
 }
 

@@ -11,21 +11,27 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
+#include "Ship.h"
 #include "Blank.h"
 #include "../GameObject.h"
+
+class Ship;
 
 class Enemy : public GameObject
 {
 public:
-    Enemy(int layer, SDL_Renderer* renderer);
+    Enemy(int layer, SDL_Renderer* renderer, int health, int shield);
     ~Enemy();
 
     void Update() override;
     void Draw() override;
     void Destroy() override;
 
-private:
+    void Attack(Ship*);
+
     int _health, _shield;
+
+private:
 
     Blank* _healthDisplay;
     Blank* _shieldDisplay;

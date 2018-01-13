@@ -11,6 +11,7 @@
 #include "GameObjects/Enemy.h"
 
 class Ship;
+class Enemy;
 
 namespace Event
 {
@@ -18,6 +19,8 @@ namespace Event
     void ResetLocations();
 
     static bool visited[15];
-}
+
+    static Enemy* currentEnemy;
+};
 
 #endif
