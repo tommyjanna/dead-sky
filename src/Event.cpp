@@ -11,7 +11,18 @@ namespace Event
     {
         std::vector<std::string> answers; // Vector for passing possible answers.
 
-        if(!visited[ship->si._location] || panelNumber > 1) // If location hasn't been visited or new panel, run event.
+        // Destroy existing enemy ships.
+        if(currentEnemy != NULL)
+        {
+            if(currentEnemy->_location != ship->si._location)
+            {
+                currentEnemy->_toBeDestroyed = true;
+                currentEnemy = NULL;
+            }
+        }
+
+        // If location hasn't been visited or new panel or shop location, run event.
+        if(!visited[ship->si._location] || panelNumber > 1 || ship->si._location == 5)
         {
             switch(ship->si._location)
             {
@@ -19,7 +30,7 @@ namespace Event
                 if(panelNumber == 1)
                 {
                     ship->si.DisplayPanel("You are the captain of an infamous raider mob. You and your marauder crew "
-                                "were hired by the newly formed rebel alliance to thief vital information "
+                                "were hired by the newly formed rebel alliance to thieve vital information "
                                 "on the Janerian Empire's mothership. The Janerian Empire led under their Lord, "
                                 "Emperor Tommy Janna the Great, have been tyranizing the star citizens of this "
                                 "galaxy for decades!\n\nYour crew successfully obtained the intel "
@@ -103,7 +114,7 @@ namespace Event
             case 3:
                 if(panelNumber == 1)
                 {
-                    currentEnemy = new Enemy(2, Game::_renderer, 40, 20, 10, 30);
+                    currentEnemy = new Enemy(2, Game::_renderer, 40, 20, 10, 30, ship->si._location);
                     currentEnemy->_texture->LoadTexture("../assets/graphics/enemyship.png");
 
                     answers.push_back(">: Loyalty tax my ass! Bite me.");
@@ -131,7 +142,7 @@ namespace Event
                     else if(choice == 1)
                     {
                         ship->si.DisplayPanel("\"Thanks for your compliance.\"\n\nYou lost "
-                                + std::to_string(ship->_credits) + "credits.");
+                                + std::to_string(ship->_credits) + " credits.");
 
                         ship->_credits = 0;
                     }
@@ -141,6 +152,57 @@ namespace Event
                 {
                     ship->si.CombatPanel(currentEnemy);
                 }
+                break;
+            
+            case 4:
+                ship->si.DisplayPanel("This area seems to be empty... Best move onto the next sector.");
+                break;
+            
+            case 5:
+                ship->si.Shop();
+                break;
+
+            case 6:
+                if(panelNumber == 1)
+                {
+                    answers.push_back(">: Proceed stealthly through the stardust.");
+                    answers.push_back(">: Suck all the dust using your space vacuum, but revealing your location.");
+
+                    ship->si.DisplayPanel("You enter a sector filled with stardust from a recent death "
+                                    "of a star. On your radio, you pick up broken sentances from hostile Empire "
+                                    "ships!\n\nYou must proceed through the sector but if the Empire spots you "
+                                    "the intel will be confiscated and your crew will be tried under the full extent of space law!", answers, 2);
+                }
+
+                else if(panelNumber == 2)
+                {
+                    if(choice == 0)
+                    {
+                        ship->si.DisplayPanel("You succesfully navigated the stardust without getting "
+                                            "spotted by the Empire. You can now warp to the next sector.");
+                    }
+
+                    else if(choice == 1)
+                    {
+                        answers.push_back("Battle!");
+
+                        ship->si.DisplayPanel("As you're sucking up the dust, you were spotted by one of the Empire "
+                                            "ships and they recognized your ship as fugitives from the Empire.\n\n"
+                                            "\"SURRENDER NOW REBEL SCUM!\"", answers, 3);
+                    }
+                }
+
+                else if(panelNumber == 3)
+                {
+                    currentEnemy = new Enemy(2, Game::_renderer, 80, 40, 15, 45, ship->si._location);
+                    currentEnemy->_texture->LoadTexture("../assets/graphics/enemyship.png");
+
+                    ship->si.CombatPanel(currentEnemy);
+                }
+                break;
+            case 7:
+                
+                break;
             }
         }
 
@@ -149,24 +211,13 @@ namespace Event
             SceneManager::ChangeScene(SceneManager::EXIT);
         }
 
-        if(destroyEnemy)
-        {
-            destroyEnemy = false;
-            currentEnemy->_toBeDestroyed = true;
-        }
-
         // Flag visited current location so when the ship returns, the same event won't run.
         visited[ship->si._location] = true;
     }
 
-    void DestroyEnemy()
-    {
-        destroyEnemy = true;
-    }
-
     void ResetLocations()
     {
-        for(int i = 0; i < 15; i++)
+        for(int i = 0; i < 13; i++)
         {
             visited[i] = false;
         }

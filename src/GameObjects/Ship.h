@@ -56,6 +56,7 @@ public:
         void CombatPanel(Enemy* enemy);
         void BattleLog(std::string message, bool myTurn, Ship* ship, Enemy* enemy);
         void CreateMap();
+        void Shop();
 
         void DrawMapLines();
         void DeleteMapLines();
@@ -101,21 +102,25 @@ public:
         Button* _spaceMap;
         Button* _closeMap;
 
-        int _mapNodes[15][2];
+        bool _shopOwned[4];
+        int _shopPrices[4];
+
+        int _mapNodes[13][2];
         int _mapPosX, _mapPosY;
 
         std::vector<Button*> _mapButtons;
         std::vector<Button*> _answers;
         std::vector<Button*> _combatButtons;
+        std::vector<Button*> _shopButtons;
         std::vector<std::string> _loseOptions;
-
+        std::vector<Button*> _continueButtons;
         Line* _lines;
     };
 
     ShipInterface si;
 
     int _health, _shield;
-    int _credits, _damage, _members, _energy;
+    int _credits, _damage, _members, _energy, _shieldRegen;
 
 private:
 };

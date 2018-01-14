@@ -5,12 +5,13 @@
 
 #include "Enemy.h"
 
-Enemy::Enemy(int layer, SDL_Renderer* renderer, int health, int shield, int damage, int credits) : GameObject(492, 140, 600, 300, layer, renderer, "Enemy")
+Enemy::Enemy(int layer, SDL_Renderer* renderer, int health, int shield, int damage, int credits, int location) : GameObject(492, 140, 600, 300, layer, renderer, "Enemy")
 {
     _health = health;
     _shield = shield;
     _damage = damage;
     _credits = credits;
+    _location = location;
 
     _healthText = new Blank(renderer, 885, 25, 1, 1, 4, 40, " ");
     _shieldText = new Blank(renderer, 885, 500, 1, 1, 4, 40, " ");
@@ -54,6 +55,7 @@ void Enemy::Attack(Ship* ship)
 {
     std::string battleLog = "Enemy turn:\n";
     int spilloverDamage;
+    int useMissiles = rand() % 3;
 
     if(_health <= 0)
     {
@@ -62,44 +64,47 @@ void Enemy::Attack(Ship* ship)
                                 " trade credits!");
 
         ship->_credits += _credits;
-        Event::DestroyEnemy();
     }
 
     else
     {
-        // Shield penetration missiles.
-        if(ship->_shield > 0)
+        // Only use shield penetration missiles 1 in 3.
+        if(useMissiles == 0)
         {
-            _damage *= 2;
-
-            battleLog.append("The enemy dealt " + std::to_string(_damage / 2) + " damage, but it was DOUBLED to " +
-                std::to_string(_damage) + " because they hit the shield with your shield penetration missiles!\n\n");
-
-            if(ship->_shield < _damage)
+            // Shield penetration missiles.
+            if(ship->_shield > 0)
             {
-                ship->_shield = 0;
+                _damage *= 2;
+
+                battleLog.append("The enemy dealt " + std::to_string(_damage / 2) + " damage, but it was DOUBLED to " +
+                    std::to_string(_damage) + " because they hit the shield with your shield penetration missiles!\n\n");
+
+                if(ship->_shield < _damage)
+                {
+                    ship->_shield = 0;
+                }
+
+                else
+                {
+                    ship->_shield -= _damage;
+                }
             }
 
             else
             {
-                ship->_shield -= _damage;
-            }
-        }
+                if(ship->_health < _damage / 2)
+                {
+                    ship->_health = 0;
+                }
 
-        else
-        {
-            if(ship->_health < _damage / 2)
-            {
-                ship->_health = 0;
-            }
+                else
+                {
+                    ship->_health -= _damage / 2;
+                }
 
-            else
-            {
-                ship->_health -= _damage / 2;
+                battleLog.append("The enemy dealt " + std::to_string(_damage) + " damage, but it was HALVED to " +
+                    std::to_string(_damage / 2) + " because they didn't hit any shield with their shield penetration missiles!\n\n");
             }
-
-            battleLog.append("The enemy dealt " + std::to_string(_damage) + " damage, but it was HALVED to " +
-                std::to_string(_damage / 2) + " because they didn't hit any shield with their shield penetration missiles!\n\n");
         }
 
         // Regular blasters.

@@ -15,6 +15,7 @@ Game::Game()
 	_window = NULL, _renderer = NULL, _quit = false;
 
 	_mouseInput = new bool[4];
+	srand(time(NULL));
 
 	InitializeSDL();
 

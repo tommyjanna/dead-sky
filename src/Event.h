@@ -18,12 +18,10 @@ namespace Event
 {
     void UpdateEvent(Ship* ship, int panelNumber, int choice);
     void ResetLocations();
-    void DestroyEnemy();
 
-    static bool visited[15];
-    static bool destroyEnemy;
+    static bool visited[13];
 
-    static Enemy* currentEnemy;
+    static Enemy* currentEnemy = NULL;
 };
 
 #endif

@@ -15,13 +15,15 @@
 #include "Blank.h"
 #include "../Event.h"
 #include "../GameObject.h"
+#include <cstdlib>
+#include <ctime>
 
 class Ship;
 
 class Enemy : public GameObject
 {
 public:
-    Enemy(int layer, SDL_Renderer* renderer, int health, int shield, int damage, int credits);
+    Enemy(int layer, SDL_Renderer* renderer, int health, int shield, int damage, int credits, int location);
     ~Enemy();
 
     void Update() override;
@@ -30,7 +32,7 @@ public:
 
     void Attack(Ship*);
 
-    int _health, _shield, _credits;
+    int _health, _shield, _credits, _location;
 
 private:
 

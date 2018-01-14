@@ -11,6 +11,7 @@ Ship::Ship(int layer, SDL_Renderer* renderer) : GameObject(-80, 140, 600, 300, l
 
     _health = 100;
     _shield = 0;
+    _shieldRegen = 5;
 
     _damage = 25;
     _members = 3;
@@ -49,7 +50,7 @@ void Ship::Attack(Enemy* enemy)
 {
     int damage = _damage * _blasterPts;
     int shieldDamage = _damage * _shieldPenPts;
-    int shieldRegen = 5 * _shieldPts;
+    int shieldRegen = _shieldRegen * _shieldPts;
 
     int spilloverDamage;
 
@@ -195,6 +196,7 @@ void Ship::ShipInterface::DisplayPanel(std::string message)
     SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
 
     _panelText->_texture->LoadRenderedText(message, textColour);
+        
     _continueButton = new Button(_renderer, 
                                 455, 430, 
                                 88, 37,
@@ -204,9 +206,11 @@ void Ship::ShipInterface::DisplayPanel(std::string message)
                                                         _panelText->_show = false;
                                                         _continueButton->_show = false;
                                                         _spaceMap->_show = true;
-                                                        _continueButton->_toBeDestroyed = true; }, 
+                                                        _continueButton->_toBeDestroyed = true; 
+                                                        DeleteButtons(_shopButtons);
+                                                        DeleteButtons(_continueButtons); }, 
                                 false);
-                    
+    _continueButtons.push_back(_continueButton);                   
 }
 
 int Ship::ShipInterface::DisplayPanel(std::string message, std::vector<std::string> answers, int panelNum)
@@ -287,6 +291,7 @@ void Ship::ShipInterface::Destroy()
     DeleteButtons(_mapButtons);
     DeleteButtons(_answers);
     DeleteButtons(_combatButtons);
+    DeleteButtons(_shopButtons);
 
     _lines->_toBeDestroyed = true;
 
@@ -295,7 +300,7 @@ void Ship::ShipInterface::Destroy()
 
 void Ship::ShipInterface::CreateMap()
 {
-    int mapNodes[15][2] = { {263, 434},
+    int mapNodes[13][2] = { {263, 434},
                             {323, 385},
                             {390, 373},
                             {387, 341},
@@ -303,15 +308,13 @@ void Ship::ShipInterface::CreateMap()
                             {378, 266},
                             {445, 283},
                             {521, 254},
-                            {526, 193},
                             {591, 247},
                             {642, 207},
                             {630, 180},
                             {701, 156},
-                            {738, 136},
-                            {741, 201} };
+                            {738, 136} };
 
-    std::copy(&mapNodes[0][0], &mapNodes[15][2], &_mapNodes[0][0]);
+    std::copy(&mapNodes[0][0], &mapNodes[13][2], &_mapNodes[0][0]);
 
     _mapPosX = _mapNodes[0][0];
     _mapPosY = _mapNodes[0][1];
@@ -347,7 +350,7 @@ void Ship::ShipInterface::CreateMap()
 
 int Ship::ShipInterface::LocateShip()
 {
-    for(int i = 0; i < 15; i++)
+    for(int i = 0; i < 13; i++)
     {
         if(_mapPosX == _mapNodes[i][0])
         {
@@ -566,6 +569,82 @@ void Ship::ShipInterface::ModPoints(Button* b)
     }
 
     _energyText->_texture->LoadRenderedText("You have " + std::to_string(_parentShip->_energy) + " energy points to spend.");
+}
+
+void Ship::ShipInterface::Shop()
+{
+    std::string shopItems[4] = {"Repair Hull [100 HP] (35 GTC)",
+                            "Repair Shields [100 SH] (20 GTC)",
+                            "Upgrade Weapon Systems [+10 damage] (35 GTC)",
+                            "Upgrade Shield Regen Systems [+5 shield per turn] (30 GTC)"};
+
+    for(int i = 0; i < 4; i++)
+    {
+        _shopOwned[i] = false;
+    }
+
+    _shopPrices[0] = 35;
+    _shopPrices[1] = 20;
+    _shopPrices[2] = 35;
+    _shopPrices[3] = 30;
+
+    _panel->_show = true;
+    _panelText->_show = true;
+    _spaceMap->_show = false;
+
+    SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
+
+    _panelText->_texture->LoadRenderedText("Welcome to the Galactic Trade Market, hope you find what you're lookin' for.\n\n", textColour);
+    DisplayPanel("");
+    for(int i = 0; i < 5; i++)
+    {
+        Button* b = new Button(_renderer,
+                                240, 250 + (25 * i),
+                                200, 37,
+                                4,
+                                18, "../assets/fonts/nasalization-rg.ttf", shopItems[i],
+                                [this, i, shopItems]() {
+                                    if(_shopOwned[i])
+                                    {
+                                        DisplayPanel("You already own this.");
+                                    }
+
+                                    else
+                                    {
+                                        if(_parentShip->_credits >= _shopPrices[i])
+                                        {
+                                            _parentShip->_credits -= _shopPrices[i];
+                                            DisplayPanel("You bought " + shopItems[i] + "!!");
+                                            _shopOwned[i] = true;
+
+                                            switch(i)
+                                            {
+                                            case 0:
+                                                _parentShip->_health = 100;
+                                                break;
+                                            case 1:
+                                                _parentShip->_shield = 100;
+                                                break;
+                                            case 2:
+                                                _parentShip->_damage += 10;
+                                                break;
+                                            case 3:
+                                                _parentShip->_shieldRegen += 5;
+                                                break;
+                                            }
+                                        }
+
+                                        else
+                                        {
+                                            DisplayPanel("You don't have enought credits!");
+                                        }
+                                    }
+
+                                },
+                                false);
+        
+        _shopButtons.push_back(b);
+    }
 }
 
 void Ship::ShipInterface::BattleLog(std::string message, bool myTurn, Ship* ship, Enemy* enemy)
