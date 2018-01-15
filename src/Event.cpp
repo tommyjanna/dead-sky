@@ -314,11 +314,11 @@ namespace Event
             case 11:
                 if(panelNumber == 1)
                 {
-                    currentEnemy = new Enemy(2, Game::_renderer, 175, 100, 50, 1000, ship->si._location);
+                    currentEnemy = new Enemy(2, Game::_renderer, 150, 100, 30, 1000, ship->si._location);
                     currentEnemy->_texture->LoadTexture("../assets/graphics/dreadnought.png");
 
                     answers.push_back(">: I'd like to see you try.");
-                    ship->si.DisplayPanel("An Empire dreadnought awaits your ship.\n\"HALT REBEL SCUM, SURRENDER "
+                    ship->si.DisplayPanel("An Empire dreadnought awaits your ship.\n\n\"HALT REBEL SCUM, SURRENDER "
                                         "YOURSELVES, OR YOU SHALL BE DESTROYED\"", answers, 2);
                 }
 
@@ -329,6 +329,19 @@ namespace Event
                 break;
 
             case 12:
+                if(panelNumber == 1)
+                {
+                    answers.push_back("Exit Game.");
+
+                    ship->si.DisplayPanel("You arrived at the rebel base on Earth-5 and succesfully delivered the intel "
+                                        "to the commander! Now the rebels can conduct a succesful attack on the Empire "
+                                        "mothership and peace will be restored to the galaxy.\n\nCongratulations!", answers, 2);
+                }
+
+                else if(panelNumber == 2)
+                {
+                    SceneManager::ChangeScene(SceneManager::EXIT);
+                }
                 break;
             }
         }

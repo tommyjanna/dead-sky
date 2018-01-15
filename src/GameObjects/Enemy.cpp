@@ -74,19 +74,17 @@ void Enemy::Attack(Ship* ship)
             // Shield penetration missiles.
             if(ship->_shield > 0)
             {
-                _damage *= 2;
+                battleLog.append("The enemy dealt " + std::to_string(_damage) + " damage, but it was DOUBLED to " +
+                    std::to_string(_damage * 2) + " because they hit the shield with your shield penetration missiles!\n\n");
 
-                battleLog.append("The enemy dealt " + std::to_string(_damage / 2) + " damage, but it was DOUBLED to " +
-                    std::to_string(_damage) + " because they hit the shield with your shield penetration missiles!\n\n");
-
-                if(ship->_shield < _damage)
+                if(ship->_shield < _damage * 2)
                 {
                     ship->_shield = 0;
                 }
 
                 else
                 {
-                    ship->_shield -= _damage;
+                    ship->_shield -= _damage * 2;
                 }
             }
 
@@ -110,14 +108,12 @@ void Enemy::Attack(Ship* ship)
         // Regular blasters.
         if(ship->_shield > 0)
         {
-            _damage /= 2;
+            battleLog.append("The enemy dealt " + std::to_string(_damage) + " damage, but it was HALVED to " +
+                        std::to_string(_damage / 2) + " because they hit the shield with their regular blasters!\n\n");
 
-            battleLog.append("The enemy dealt " + std::to_string(_damage * 2) + " damage, but it was HALVED to " +
-                        std::to_string(_damage) + " because you hit the shield with your regular blasters!\n\n");
-
-            if(ship->_shield < _damage) // If damage should do more damage than the enemy's shield.
+            if(ship->_shield < _damage / 2) // If damage should do more damage than the enemy's shield.
             {
-                spilloverDamage = _damage - ship->_shield;
+                spilloverDamage = (_damage / 2) - ship->_shield;
 
                 ship->_shield = 0;
                 ship->_health -= spilloverDamage;
@@ -125,7 +121,7 @@ void Enemy::Attack(Ship* ship)
 
             else
             {
-                ship->_shield -= _damage;
+                ship->_shield -= _damage / 2;
             }
         }
 
