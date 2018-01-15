@@ -55,7 +55,7 @@ void Enemy::Attack(Ship* ship)
 {
     std::string battleLog = "Enemy turn:\n";
     int spilloverDamage;
-    int useMissiles = rand() % 3;
+    int useMissiles = rand() % 4;
 
     if(_health <= 0)
     {
@@ -68,8 +68,8 @@ void Enemy::Attack(Ship* ship)
 
     else
     {
-        // Only use shield penetration missiles 1 in 3.
-        if(useMissiles == 0)
+        // Only use shield penetration missiles 3 in every 4.
+        if(useMissiles != 3)
         {
             // Shield penetration missiles.
             if(ship->_shield > 0)

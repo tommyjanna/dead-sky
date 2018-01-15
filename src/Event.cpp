@@ -200,8 +200,135 @@ namespace Event
                     ship->si.CombatPanel(currentEnemy);
                 }
                 break;
+
             case 7:
-                
+                ship->si.DisplayPanel("An eerie silence depends on the ship as you pull into the sector. "
+                                "It's a little too calm for comfort. The radar shows no ships in the area. "
+                                "\n\nNo answers present themselves so you must move onto the next sector.");
+                break;
+
+            case 8:
+                if(panelNumber == 1)
+                {
+                    answers.push_back(">: Engage back thrusters to full blast and try to pull away.");
+                    answers.push_back(">: Engage side thrusters and try to burn the creature.");
+                    answers.push_back(">: Target all weapons on the creature's eyes.");
+
+                    ship->si.DisplayPanel("The same silence presents itself as you warp into the sector. " 
+                                "Suddenly, a giant tentacle reaches out from the depths of space and grabs "
+                                "a hold of your ship. The suction cups latch to your hull and begins "
+                                "to pull you toward a desolate planet far below. Your crew beings to panic.", answers, 2);
+                }
+
+                else if(panelNumber == 2)
+                {
+                    if(choice == 0)
+                    {
+                        ship->si.DisplayPanel("You manage to pull free from the grip of death itself. " 
+                                        "In the process a piece of hull is ripped off.\n\n"
+                                        "Your ship took 20 HP in damage.");
+
+                        ship->_health -= 20;
+                    }
+
+                    else if(choice == 1)
+                    {
+                        ship->si.DisplayPanel("The burn of the thrusters causes the tentacle to lash back. "
+                                            "You instantly engage back thursters now to escape while the creature "
+                                            "is dazed, but as you are accelerating, the tentacle knocks your ship "
+                                            "with a hard blow! Fortunately the suction cups weren't able to latch "
+                                            "on and you escaped with hefty damage to you hull.\n\n"
+                                            "Your ship took 45 HP in damage.");
+
+                        ship->_health -= 45;
+                    }
+
+                    else if(choice == 2)
+                    {
+                        ship->si.DisplayPanel("You launch all defenses against the creature's eyes!\n\n"
+                                            "Direct shots! The arm unlatches from your ship and your ship is "
+                                            "freed from the clutches of death itself.\n\nQuickly, you engage your "
+                                            "back thrusters and speed off into the space ahead.");
+                    }
+                }
+                break;
+
+            case 9:
+                if(panelNumber == 1)
+                {
+                    answers.push_back(">: Enter the field, we must search that escape pod!");
+                    answers.push_back(">: Leave it, I don't have time for this.");
+                    ship->si.DisplayPanel("You enter the sector and stop on the border of an asteroid field. "
+                                        "You look deeply at the floating rocks. Suddenly you notice a small "
+                                        "escape pod floating on its own out in the field.\n\nYour ship is relatively "
+                                        "large and entering the field may cause damages to your ship.", answers, 2);
+                }
+
+                else if(panelNumber == 2)
+                {
+                    if(choice == 0)
+                    {
+                        ship->si.DisplayPanel("You enter the asteroid field and your hull takes a few nasty dents. "
+                                            "Once you reach the pod, you pull it onto your ship using ship's arm. "
+                                            "On board, you find an unconcious young rebel pilot, as read a crest "
+                                            "on his jacket. His heart is still beating, so you leave him to rest up "
+                                            "on your ship.\n\nOnce the young human wakes up he explains how he got "
+                                            "seperated from the rebels after their ship was invaded, so he escaped on "
+                                            "this pod. He agrees to help you carry the inteligence to the rebel base!"
+                                            "\n\nYou gained a crew member (+1 energy in combat) and your ship took 5 HP "
+                                            " in damage from the asteroids.");
+                        
+                        ship->_health -= 5;
+                        ship->_members++;
+                    }
+                }
+                break;
+
+            case 10:
+
+                if(panelNumber == 1)
+                {
+                    answers.push_back(">: Pfft, I can handle anything.");
+                    answers.push_back(">: Thank you for the warning, but we must proceed to save the Galaxy.");
+                    ship->si.DisplayPanel("You encounter a large cargo ship, and a video transmission is "
+                                        "patched through to your monitor. The crew of Romulan traders say:\n\n"
+                                        "\"We are out here seeking conducting business and we noticed a large "
+                                        "Empire ship ahead in the next sector. We implore you to tread lightly, those "
+                                        "ship's are not deployed on your average day. Be careful out there traveler.\"");
+                }
+
+                else if(panelNumber == 2)
+                {
+                    if(choice == 0)
+                    {
+                        ship->si.DisplayPanel("\"For your sake, I hope this is true.\"");
+                    }
+
+                    else if(choice == 1)
+                    {
+                        ship->si.DisplayPanel("\"Good luck with your adventures, wherever they may take you.\"");
+                    }
+                }
+                break;
+
+            case 11:
+                if(panelNumber == 1)
+                {
+                    currentEnemy = new Enemy(2, Game::_renderer, 175, 100, 50, 1000, ship->si._location);
+                    currentEnemy->_texture->LoadTexture("../assets/graphics/dreadnought.png");
+
+                    answers.push_back(">: I'd like to see you try.");
+                    ship->si.DisplayPanel("An Empire dreadnought awaits your ship.\n\"HALT REBEL SCUM, SURRENDER "
+                                        "YOURSELVES, OR YOU SHALL BE DESTROYED\"", answers, 2);
+                }
+
+                else if(panelNumber == 2)
+                {
+                    ship->si.CombatPanel(currentEnemy);
+                }
+                break;
+
+            case 12:
                 break;
             }
         }

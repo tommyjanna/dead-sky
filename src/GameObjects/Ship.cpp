@@ -596,7 +596,7 @@ void Ship::ShipInterface::Shop()
 
     _panelText->_texture->LoadRenderedText("Welcome to the Galactic Trade Market, hope you find what you're lookin' for.\n\n", textColour);
     DisplayPanel("");
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 4; i++)
     {
         Button* b = new Button(_renderer,
                                 240, 250 + (25 * i),
