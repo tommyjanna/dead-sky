@@ -202,7 +202,7 @@ namespace Event
                 break;
 
             case 7:
-                ship->si.DisplayPanel("An eerie silence depends on the ship as you pull into the sector. "
+                ship->si.DisplayPanel("An eerie silence deepens on the ship as you pull into the sector. "
                                 "It's a little too calm for comfort. The radar shows no ships in the area. "
                                 "\n\nNo answers present themselves so you must move onto the next sector.");
                 break;
@@ -346,7 +346,7 @@ namespace Event
             }
         }
 
-        if(panelNumber == 69) // Lost game.
+        if(panelNumber == 69) // Lost game by losing all health.
         {
             SceneManager::ChangeScene(SceneManager::EXIT);
         }
@@ -357,6 +357,7 @@ namespace Event
 
     void ResetLocations()
     {
+        // Set all locations visited to false.
         for(int i = 0; i < 13; i++)
         {
             visited[i] = false;

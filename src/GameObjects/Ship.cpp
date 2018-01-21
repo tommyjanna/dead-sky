@@ -7,6 +7,7 @@
 
 Ship::Ship(int layer, SDL_Renderer* renderer) : GameObject(-80, 140, 600, 300, layer, renderer, "Ship")
 {
+    // Ship interface handles UI and such.
     si = ShipInterface(renderer, this);
 
     _health = 100;
@@ -19,7 +20,10 @@ Ship::Ship(int layer, SDL_Renderer* renderer) : GameObject(-80, 140, 600, 300, l
     
     si.CreateMap();
 
+    // Returns int between 0 and 15 to represent 15 locations on the space map.
     si._location = si.LocateShip();
+
+    // Play event based on current location.
     Event::UpdateEvent(this, 1, 0);
 }
 
@@ -48,19 +52,22 @@ void Ship::Destroy()
 
 void Ship::Attack(Enemy* enemy)
 {
+    // Calculate new stats based on base points * assigned points.
     int damage = _damage * _blasterPts;
     int shieldDamage = _damage * _shieldPenPts;
     int shieldRegen = _shieldRegen * _shieldPts;
 
+    // int for storing damage done to the shield to spillover to the hull.
     int spilloverDamage;
 
     // String for storing history of attacks
     std::string battleLog = "Your turn:\n";
 
-    if(shieldDamage > 0)
+    if(shieldDamage > 0) // Shield penetrating missiles
     {
         if(enemy->_shield > 0)
         {
+            // Hit shield with shield pen missiles therefore double damage.
             shieldDamage *= 2;
 
             battleLog.append("You dealt " + std::to_string(shieldDamage / 2) + " damage, but it was DOUBLED to " +
@@ -79,6 +86,7 @@ void Ship::Attack(Enemy* enemy)
 
         else
         {
+            // Hit hull with shield pen missiles, therefore half damage.
             shieldDamage /= 2;
             
             battleLog.append("You dealt " + std::to_string(shieldDamage * 2) + " damage, but it was HALVED to " +
@@ -96,10 +104,12 @@ void Ship::Attack(Enemy* enemy)
         }
     }
 
+    // Regular blasters.
     if(damage > 0)
     {
         if(enemy->_shield > 0)
         {
+            // Hit shield with regular blasters, therefore half damage.
             damage /= 2;
             
             battleLog.append("You dealt " + std::to_string(damage * 2) + " damage, but it was HALVED to " +
@@ -122,6 +132,7 @@ void Ship::Attack(Enemy* enemy)
 
         else
         {
+            // Hit hull with regular blasters.
             if(enemy->_health < damage)
             {
                 enemy->_health = 0;
@@ -143,6 +154,7 @@ void Ship::Attack(Enemy* enemy)
         battleLog.append("You recovered " + std::to_string(shieldRegen) + " shield points!\n\n");
     }
 
+    // Display ship's actions, then proceed to enemy attack.
     si.BattleLog(battleLog, false, this, enemy);
 
     return;
@@ -150,6 +162,7 @@ void Ship::Attack(Enemy* enemy)
 
 Ship::ShipInterface::ShipInterface()
 {
+    // Default constructor because C++ is super annoying.
     _renderer = NULL;
 }
 
@@ -189,14 +202,17 @@ Ship::ShipInterface::ShipInterface(SDL_Renderer* renderer, Ship* parentShip)
 
 void Ship::ShipInterface::DisplayPanel(std::string message)
 {
+    // Display panel.
     _panel->_show = true;
     _panelText->_show = true;
     _spaceMap->_show = false;
 
+    // Set text colour to white.
     SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
 
     _panelText->_texture->LoadRenderedText(message, textColour);
-        
+
+    // Button to close panel.
     _continueButton = new Button(_renderer, 
                                 455, 430, 
                                 88, 37,
@@ -210,6 +226,8 @@ void Ship::ShipInterface::DisplayPanel(std::string message)
                                                         DeleteButtons(_shopButtons);
                                                         DeleteButtons(_continueButtons); }, 
                                 false);
+    
+    // Collect buttons in vector to delete together.
     _continueButtons.push_back(_continueButton);                   
 }
 
@@ -219,10 +237,13 @@ int Ship::ShipInterface::DisplayPanel(std::string message, std::vector<std::stri
     _panelText->_show = true;
     _spaceMap->_show = false;
 
+    // White.
     SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
 
     _panelText->_texture->LoadRenderedText(message, textColour);
 
+    // Panel with multiple answers.
+    // Each calls UpdateEvent() on click with it's own identifier.
     for(int i = 0; i < answers.size(); i++)
     {
         Button* b = new Button(_renderer,
@@ -247,6 +268,7 @@ int Ship::ShipInterface::DisplayPanel(std::string message, std::vector<std::stri
 
 void Ship::ShipInterface::Update()
 {
+    // Update UI text.
     _healthText->_texture->LoadRenderedText(std::to_string(_parentShip->_health), SDL_Color { 0x00, 0x00, 0x00 });
     _shieldText->_texture->LoadRenderedText(std::to_string(_parentShip->_shield), SDL_Color { 0x00, 0x00, 0x00 });
     _damageText->_texture->LoadRenderedText(std::to_string(_parentShip->_damage), SDL_Color { 0xFF, 0xFF, 0xFF });
@@ -258,6 +280,7 @@ void Ship::ShipInterface::Update()
 
 void Ship::ShipInterface::Destroy()
 {
+    // Destory stuff!
     _parentShip->_toBeDestroyed = true;
     _panel->_toBeDestroyed = true;
     _panelText->_toBeDestroyed = true;
@@ -300,6 +323,7 @@ void Ship::ShipInterface::Destroy()
 
 void Ship::ShipInterface::CreateMap()
 {
+    // All the locations of each node on the space map.
     int mapNodes[13][2] = { {263, 434},
                             {323, 385},
                             {390, 373},
@@ -314,11 +338,14 @@ void Ship::ShipInterface::CreateMap()
                             {701, 156},
                             {738, 136} };
 
+    // Copy the given coords to the array belonging to the ship.
     std::copy(&mapNodes[0][0], &mapNodes[13][2], &_mapNodes[0][0]);
 
+    // Set ship to first position.
     _mapPosX = _mapNodes[0][0];
     _mapPosY = _mapNodes[0][1];
 
+    // Button for opening space map.
     _spaceMap = new Button(_renderer,
                             450, 500,
                             88, 37,
@@ -332,6 +359,7 @@ void Ship::ShipInterface::CreateMap()
                                         _locationNode->_texture->LoadTexture("../assets/graphics/shipicon.png");
                                         DrawMapLines(); }, false);
     
+    // Button for closing space map.
     _closeMap = new Button(_renderer,
                             230, 107,
                             1, 1,
@@ -350,6 +378,7 @@ void Ship::ShipInterface::CreateMap()
 
 int Ship::ShipInterface::LocateShip()
 {
+    // Compare coords of each location to ship's location to determine node location.
     for(int i = 0; i < 13; i++)
     {
         if(_mapPosX == _mapNodes[i][0])
@@ -363,8 +392,13 @@ int Ship::ShipInterface::LocateShip()
 
 void Ship::ShipInterface::DrawMapLines()
 {
+    // Relocate ship.
     _location = LocateShip();
 
+    // This draws lines to all possible locations to fly towards.
+    // If the node is within three nodes from eachother, and the node
+    // has a distance of 100 pixels or less, the ship will be able to fly there.
+    // A line to the node and a button will be created.
     for(int i = _location - 3; i < _location + 3; i++)
     {
         if(i >= 0 && i != _location)
@@ -399,11 +433,15 @@ void Ship::ShipInterface::DrawMapLines()
 
 int Ship::ShipInterface::Distance(int x1, int y1, int x2, int y2)
 {
+    // Calculates distance between two points.
+    // Wow, grade 10 math came in handy! I always thought I could just count
+    // points on the grid.
     return sqrt((pow((x2 - x1), 2)) + (pow((y2 - y1), 2)));
 }
 
 void Ship::ShipInterface::DeleteMapLines()
 {
+    // Delete lines in vector.
     for(int i = 0; i < Line::_lines.size(); i++)
     {
         Line::_lines[i]->_toBeDestroyed = true;
@@ -412,6 +450,8 @@ void Ship::ShipInterface::DeleteMapLines()
 
 void Ship::ShipInterface::DeleteButtons(std::vector<Button*> buttonVector)
 {
+    // Delete buttons in a given vector.
+    // Useful for closing screens with variable number of buttons.
     for(int i = 0; i < buttonVector.size(); i++)
     {
         if(buttonVector[i] != NULL)
@@ -421,6 +461,7 @@ void Ship::ShipInterface::DeleteButtons(std::vector<Button*> buttonVector)
 
 void Ship::ShipInterface::CombatPanel(Enemy* enemy)
 {
+    // Allow user to input points for their attack stats.
     _parentShip->_blasterPts = 0;
     _parentShip->_shieldPenPts = 0;
     _parentShip->_shieldPts = 0;
@@ -478,6 +519,7 @@ void Ship::ShipInterface::CombatPanel(Enemy* enemy)
         _combatButtons.push_back(plus3);
         // Ok, the bad code is over, open your eyes.
 
+        // Fire button, to confirm points and attack the enemy.
         _fire = new Button(_renderer, 
                             490, 430, 
                             88, 37,
@@ -500,6 +542,8 @@ void Ship::ShipInterface::CombatPanel(Enemy* enemy)
 
 void Ship::ShipInterface::ModPoints(Button* b)
 {
+    // This function determines the buttons pushed and,
+    // will modify points accordingly.
     int buttonId;
 
     for(int i = 0; i < 6; i++)
@@ -578,11 +622,14 @@ void Ship::ShipInterface::Shop()
                             "Upgrade Weapon Systems [+10 damage] (35 GTC)",
                             "Upgrade Shield Regen Systems [+5 shield per turn] (30 GTC)"};
 
+    // Shop array to determine if you already
+    // own a product.
     for(int i = 0; i < 4; i++)
     {
         _shopOwned[i] = false;
     }
 
+    // Prices for the four items in shop.
     _shopPrices[0] = 35;
     _shopPrices[1] = 20;
     _shopPrices[2] = 35;
@@ -592,6 +639,7 @@ void Ship::ShipInterface::Shop()
     _panelText->_show = true;
     _spaceMap->_show = false;
 
+    // White.
     SDL_Color textColour = { 0xFF, 0xFF, 0xFF };
 
     _panelText->_texture->LoadRenderedText("Welcome to the Galactic Trade Market, hope you find what you're lookin' for.\n\n", textColour);
@@ -657,6 +705,7 @@ void Ship::ShipInterface::BattleLog(std::string message, bool myTurn, Ship* ship
 
     _panelText->_texture->LoadRenderedText(message, textColour);
 
+    // If it's my turn, allow enemy to make their turn.
     if(myTurn)
     {
         _continueButton = new Button(_renderer, 
@@ -673,6 +722,7 @@ void Ship::ShipInterface::BattleLog(std::string message, bool myTurn, Ship* ship
                                     false);
     }
 
+    // Enemy turn, so allow player to make a turn.
     else
     {
         _continueButton = new Button(_renderer, 

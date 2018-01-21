@@ -17,7 +17,9 @@ class Blank : public GameObject
 {
 public:
     Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer);
+    // Object with text using default font.
     Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string);
+    // Object with text using custom font.
     Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string font, std::string);
     ~Blank();
 

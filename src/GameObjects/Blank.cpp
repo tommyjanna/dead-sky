@@ -7,12 +7,13 @@
 
 Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer) : GameObject(x, y, width, height, layer, renderer, "Blank")
 {
-
+    // Nothing really needs to be done.
+    return;
 }
 
 Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string text) : GameObject(x, y, width, height, layer, renderer, "Blank")
 {
-
+    // Default font.
     _texture->_font = TTF_OpenFont("../assets/fonts/lilliputsteps.ttf", fontSize);
 
     if(_texture->_font == NULL)
@@ -32,7 +33,7 @@ Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 
 
 Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string font, std::string text) : GameObject(x, y, width, height, layer, renderer, "Blank")
 {
-
+    // Load custom font.
     _texture->_font = TTF_OpenFont(font.c_str(), fontSize);
 
     if(_texture->_font == NULL)
@@ -52,10 +53,12 @@ Blank::Blank(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 
 
 Blank::~Blank()
 {
+    return;
 }
 
 void Blank::Update()
 {
+    return;
 }
 
 void Blank::Draw()
@@ -68,4 +71,5 @@ void Blank::Draw()
 
 void Blank::Destroy()
 {
+    return;
 }

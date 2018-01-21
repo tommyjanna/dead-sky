@@ -17,6 +17,7 @@ Line::Line(SDL_Renderer* renderer, int x1, int y1, int x2, int y2) : GameObject(
     _x2 = x2;
     _y2 = y2;
 
+    // Add line to vector so they can all be destroyed together.
     _lines.push_back(this);
 
     return;

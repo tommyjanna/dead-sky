@@ -15,6 +15,8 @@ Game::Game()
 	_window = NULL, _renderer = NULL, _quit = false;
 
 	_mouseInput = new bool[4];
+
+	// Seed random number generator.
 	srand(time(NULL));
 
 	InitializeSDL();
@@ -142,6 +144,8 @@ void Game::Input()
 			break;
         }
     }
+
+	return;
 }
 
 bool Game::IsKeyDown(int key)
@@ -160,18 +164,6 @@ bool Game::IsKeyDown(int key)
 
 void Game::Update()
 {
-	if(IsKeyDown(SDL_SCANCODE_UP))
-		printf("Up\n");
-
-	if(IsKeyDown(SDL_SCANCODE_DOWN))
-		printf("Down\n");
-
-	if(IsKeyDown(SDL_SCANCODE_LEFT))
-		printf("Left\n");
-
-	if(IsKeyDown(SDL_SCANCODE_RIGHT))
-		printf("Right\n");
-
 	// Update existing GameObjects
 	for(int i = 0; i < GameObject::_objects.size(); /*conditional increment*/ )
 	{
@@ -194,8 +186,8 @@ void Game::Update()
 
 			// Don't increment i here to update the swapped object,
 			// unless vector is empty, in which we want to exit the loop.
-			//if(GameObject::_objects.empty())
-			i++;
+			if(!GameObject::_objects.empty())
+				i++;
 		}
 		else
 		{

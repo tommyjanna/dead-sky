@@ -16,7 +16,7 @@
 class Button : public GameObject
 {
 public:
-    Button(SDL_Renderer* renderer, int x, int y, int width, int height, Uint8 layer, std::string path, std::function<void()> const& event, bool menuButton);
+    Button(SDL_Renderer*, int x, int y, int width, int height, Uint8 layer, std::string path, std::function<void()> const& event, bool menuButton);
     Button(SDL_Renderer*, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string, std::function<void()> const& event, bool menuButton);
     Button(SDL_Renderer*, int x, int y, int width, int height, Uint8 layer, int fontSize, std::string font, std::string, std::function<void()> const& event, bool menuButton);
     ~Button();
@@ -27,6 +27,8 @@ public:
 
 private:
 
+    // Different width and height boundaries made for detecting boundary
+    // of the button itself.
     int _buttonWidth, _buttonHeight;
     int _x, _y;
     
@@ -37,6 +39,7 @@ private:
     bool _down;
     bool _menuButton;
 
+    // Function that will fire when the button is pushed.
     std::function<void()> _event;
 };
 

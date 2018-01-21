@@ -30,5 +30,6 @@ void SplashScreen::Draw()
 
 void SplashScreen::Destroy()
 {
+    // Load new menu.
     SceneManager::ChangeScene(SceneManager::MENU);
 }

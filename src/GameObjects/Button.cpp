@@ -101,16 +101,18 @@ void Button::Update()
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
 
+    // There is a timer between each button press to avoid,
+    // accidental double clicking of seperate buttons on a trackpad.
     if(_timerRunning)
     {
         _elapsedTime = std::chrono::system_clock::now() - _beginningTime;
-        if(_elapsedTime.count() < 200)
+        if(_elapsedTime.count() < 200) // 200 milliseconds between each push
         {
             timeCheck = false;
         }
     }
 
-    if(_show && timeCheck)
+    if(_show && timeCheck) // Timer must be complete.
     {
         // Check mouse pos with button boundaries.
         if(mouseX < _x)
@@ -169,12 +171,14 @@ void Button::Update()
                         Menu::Destroy();
                     }
 
-                    // Run buttons _event action.
+                    // Fire button's _event action.
                     _event();
                 }
             }
         }
     }
+
+    return;
 }
 
 void Button::Draw()
@@ -183,9 +187,11 @@ void Button::Draw()
     {
         _texture->Render();
     }
+
+    return;
 }
 
 void Button::Destroy()
 {
-    
+    return;
 }

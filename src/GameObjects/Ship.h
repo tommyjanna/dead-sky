@@ -42,6 +42,7 @@ public:
     int _blasterPts;
     int _shieldPts;
 
+    // This class handles UI elements for the ship.
     class ShipInterface
     {
     public:
@@ -53,8 +54,8 @@ public:
 
         void DisplayPanel(std::string text); // Single text panel.
         int DisplayPanel(std::string text, std::vector<std::string> answers, int panelNum); // A panel with multiple answers.
-        void CombatPanel(Enemy* enemy);
-        void BattleLog(std::string message, bool myTurn, Ship* ship, Enemy* enemy);
+        void CombatPanel(Enemy* enemy); // Assigning points in combat.
+        void BattleLog(std::string message, bool myTurn, Ship* ship, Enemy* enemy); // Displays actions perfromed.
         void CreateMap();
         void Shop();
 

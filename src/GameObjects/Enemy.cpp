@@ -16,11 +16,14 @@ Enemy::Enemy(int layer, SDL_Renderer* renderer, int health, int shield, int dama
     _healthText = new Blank(renderer, 885, 25, 1, 1, 4, 40, " ");
     _shieldText = new Blank(renderer, 885, 500, 1, 1, 4, 40, " ");
 
+    // Background image that houses stats text.
     _healthDisplay = new Blank(renderer, 880, 20, 144, 60, 3);
     _shieldDisplay = new Blank(renderer, 880, 496, 144, 60, 3);
 
     _healthDisplay->_texture->LoadTexture("../assets/graphics/hpenemy.png");
     _shieldDisplay->_texture->LoadTexture("../assets/graphics/shenemy.png");
+    
+    return;
 }
 
 Enemy::~Enemy()
@@ -53,26 +56,31 @@ void Enemy::Destroy()
 
 void Enemy::Attack(Ship* ship)
 {
+    // Default battle log.
     std::string battleLog = "Enemy turn:\n";
     int spilloverDamage;
+
+    // Generate random number between 0 and 3 to determine if the enemy will fire,
+    // their missiles.
     int useMissiles = rand() % 4;
 
-    if(_health <= 0)
+    if(_health <= 0) // Skip battle sequence if health is 0.
     {
-        _health = 0;
+        _health = 0; // Set to 0 just in case number is in the negatives.
         ship->si.DisplayPanel("You defeated the enemy!\n\nYou plunder their ship and discover " + std::to_string(_credits) +
                                 " trade credits!");
 
+        // Plunder enemy's credits.
         ship->_credits += _credits;
     }
 
     else
     {
-        // Only use shield penetration missiles 3 in every 4.
+        // Only use shield penetration missiles 2 in every 3.
         if(useMissiles != 3)
         {
             // Shield penetration missiles.
-            if(ship->_shield > 0)
+            if(ship->_shield > 0) // Double damage, because missiles hit shield.
             {
                 battleLog.append("The enemy dealt " + std::to_string(_damage) + " damage, but it was DOUBLED to " +
                     std::to_string(_damage * 2) + " because they hit the shield with your shield penetration missiles!\n\n");
@@ -88,7 +96,7 @@ void Enemy::Attack(Ship* ship)
                 }
             }
 
-            else
+            else // Half the damage, because missiles hit hull.
             {
                 if(ship->_health < _damage / 2)
                 {
@@ -106,7 +114,7 @@ void Enemy::Attack(Ship* ship)
         }
 
         // Regular blasters.
-        if(ship->_shield > 0)
+        if(ship->_shield > 0) // Half the damage because blasters hit the shield.
         {
             battleLog.append("The enemy dealt " + std::to_string(_damage) + " damage, but it was HALVED to " +
                         std::to_string(_damage / 2) + " because they hit the shield with their regular blasters!\n\n");
@@ -125,7 +133,7 @@ void Enemy::Attack(Ship* ship)
             }
         }
 
-        else
+        else // Regular damage, because blasters hit the hull
         {
             if(ship->_health < _damage)
             {
@@ -140,6 +148,7 @@ void Enemy::Attack(Ship* ship)
             battleLog.append("The enemy dealt " + std::to_string(_damage) + " damage with their regular blasters!\n\n");
         }
 
+        // Display all enemy actions.
         ship->si.BattleLog(battleLog, true, ship, this);
     }
     return;
